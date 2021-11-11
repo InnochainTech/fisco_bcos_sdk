@@ -1,5 +1,6 @@
-package inno.fiscobcos.be.util;
+package inno.fiscobcos.be.util.chain;
 
+import inno.fiscobcos.be.util.MyAssembleTransactionProcessor;
 import org.apache.commons.lang3.tuple.Pair;
 import org.fisco.bcos.sdk.BcosSDK;
 import org.fisco.bcos.sdk.client.Client;

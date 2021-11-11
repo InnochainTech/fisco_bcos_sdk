@@ -1,5 +1,6 @@
 package inno.fiscobcos.be.configuration;
 
+import inno.fiscobcos.be.constant.Config;
 import inno.fiscobcos.be.constant.MQConstant;
 import inno.fiscobcos.be.listener.RequestListener;
 import io.netty.channel.DefaultChannelId;
@@ -33,6 +34,9 @@ public class MQConsumerConfiguration {
     @Value("${rocketmq.consumer.consumeMessageBatchMaxSize}")
     private int consumeMessageBatchMaxSize;
 
+    @Autowired
+    private Config config;
+
     // erc20
     @Autowired
     private RequestListener requestListener;
@@ -48,31 +52,34 @@ public class MQConsumerConfiguration {
 
     private DefaultMQPushConsumer initDefaultMQPushConsumer(MessageListenerConcurrently listener, String tag) {
         DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(tag);
-        consumer.setNamesrvAddr(namesrvAddr);
-        consumer.setConsumeThreadMin(consumeThreadMin);
-        consumer.setConsumeThreadMax(consumeThreadMax);
+        if(config.rocketmqWork){
+            consumer.setNamesrvAddr(namesrvAddr);
+            consumer.setConsumeThreadMin(consumeThreadMin);
+            consumer.setConsumeThreadMax(consumeThreadMax);
 
-        // 设置 consumer 第一次启动是从队列头部开始消费还是队列尾部开始消费
-        // 如果非第一次启动，那么按照上次消费的位置继续消费
-        consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);
-        // 设置消费模型，集群还是广播，默认为集群
-        consumer.setMessageModel(MessageModel.CLUSTERING);
-        consumer.setConsumeTimeout(30000);
-        // 设置一次消费消息的条数，默认为 1 条
-        consumer.setConsumeMessageBatchMaxSize(consumeMessageBatchMaxSize);
-        consumer.registerMessageListener(listener);
-        try {
-            // 设置该消费者订阅的主题和tag，如果是订阅该主题下的所有tag，使用*；
-            consumer.subscribe(MQConstant.CHAIN_REQUEST_TOPIC, tag);
-            DefaultChannelId.newInstance();
-            // 启动消费
-            consumer.start();
-            log.info("consumer is started. groupName:{}, topics:{}, namesrvAddr:{}",tag,MQConstant.CHAIN_REQUEST_TOPIC,namesrvAddr);
+            // 设置 consumer 第一次启动是从队列头部开始消费还是队列尾部开始消费
+            // 如果非第一次启动，那么按照上次消费的位置继续消费
+            consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);
+            // 设置消费模型，集群还是广播，默认为集群
+            consumer.setMessageModel(MessageModel.CLUSTERING);
+            consumer.setConsumeTimeout(30000);
+            // 设置一次消费消息的条数，默认为 1 条
+            consumer.setConsumeMessageBatchMaxSize(consumeMessageBatchMaxSize);
+            consumer.registerMessageListener(listener);
+            try {
+                // 设置该消费者订阅的主题和tag，如果是订阅该主题下的所有tag，使用*；
+                consumer.subscribe(MQConstant.CHAIN_REQUEST_TOPIC, tag);
+                DefaultChannelId.newInstance();
+                // 启动消费
+                consumer.start();
+                log.info("consumer is started. groupName:{}, topics:{}, namesrvAddr:{}",tag,MQConstant.CHAIN_REQUEST_TOPIC,namesrvAddr);
 
-        } catch (Exception e) {
-            log.error("failed to start consumer . groupName:{}, topics:{}, namesrvAddr:{}",tag,MQConstant.CHAIN_REQUEST_TOPIC,namesrvAddr,e);
-            throw new RuntimeException(e);
+            } catch (Exception e) {
+                log.error("failed to start consumer . groupName:{}, topics:{}, namesrvAddr:{}",tag,MQConstant.CHAIN_REQUEST_TOPIC,namesrvAddr,e);
+                throw new RuntimeException(e);
+            }
         }
+
         return consumer;
     }
 }

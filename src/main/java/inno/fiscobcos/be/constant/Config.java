@@ -1,5 +1,6 @@
 package inno.fiscobcos.be.constant;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
@@ -8,4 +9,13 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class Config {
+
+	@Value("${filePath.abi}")
+	public String abiFilePath;
+
+	@Value("${filePath.bin}")
+	public String binFilePath;
+
+	@Value("${rocketmq.work}")
+	public Boolean rocketmqWork;
 }

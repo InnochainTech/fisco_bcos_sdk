@@ -1,6 +1,7 @@
 package inno.fiscobcos.be.controller;
 
-import inno.fiscobcos.be.util.ClientUtils;
+import inno.fiscobcos.be.entity.Wallet;
+import inno.fiscobcos.be.util.chain.ClientUtils;
 import inno.fiscobcos.be.util.result.Result;
 import inno.fiscobcos.be.util.result.ResultUtils;
 import io.swagger.annotations.Api;
@@ -13,33 +14,27 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @Description: TODO(这里用一句话描述这个类的作用)
  * @Author peifeng
  * @Date 2021/7/19 9:41
  */
-@Api(tags = "账户")
+@Api(tags = "钱包")
 @Controller
 @CrossOrigin
-@RequestMapping(value = "/account")
-public class AccountController {
+@RequestMapping(value = "/wallet")
+public class WalletController {
 
     @Autowired
     private ClientUtils clientUtils;
 
-    @ApiOperation(value = "创建新地址", notes = "")
+    @ApiOperation(value = "创建新钱包")
     @ResponseBody
-    @GetMapping("/createAccount")
-    public Result createAccount(){
-        Map<String,String> resultmap = new HashMap<>();
+    @GetMapping("/createWallet")
+    public Result<Wallet> createWallet(){
         CryptoKeyPair account = clientUtils.createAccount("");
-        resultmap.put("privateKey",account.getHexPrivateKey());
-        resultmap.put("publicKey",account.getHexPublicKey());
-        resultmap.put("address",account.getAddress());
-        return ResultUtils.success(resultmap);
+        Wallet wallet = new Wallet(account.getHexPrivateKey(),account.getHexPublicKey(),account.getAddress());
+        return ResultUtils.success(wallet);
     }
 
 }

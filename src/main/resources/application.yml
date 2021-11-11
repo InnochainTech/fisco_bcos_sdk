@@ -8,3 +8,10 @@ spring:
     multipart:
       max-file-size: 50MB
 
+
+filePath:
+  abi: src/main/resources/contract/abi/
+  bin: src/main/resources/contract/bin/
+
+
+contractAddress: 0x55314417d8783b0b6a5a0112999df5721b2f62b2
