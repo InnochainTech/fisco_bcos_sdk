@@ -15,9 +15,9 @@ import java.math.BigInteger;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@ApiModel(value="AddIssuaDo",description="NFT增发数据")
+@ApiModel(value="AddIssuaVo",description="NFT增发返回数据")
 public class AddIssuaVo {
 
-	@ApiModelProperty("增发数量")
-	private BigInteger addIssuaSupply;
+	@ApiModelProperty("是否增发成功")
+	private boolean IssuaSuccess;
 }

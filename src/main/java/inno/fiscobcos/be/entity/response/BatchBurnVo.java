@@ -15,9 +15,9 @@ import java.math.BigInteger;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@ApiModel(value="BatchBurnDo",description="NFT批量销毁数据")
+@ApiModel(value="BatchBurnVo",description="NFT批量销毁返回数据")
 public class BatchBurnVo {
 
-	@ApiModelProperty("批量销毁代币数组")
-	private BigInteger[]  tokenIds;
+	@ApiModelProperty("是否销毁成功")
+	private boolean  burnSuccess;
 }

@@ -42,4 +42,7 @@ public class NFTDeployDo {
 	@ApiModelProperty("是否支持核销")
 	private Boolean canWriteOff;
 
+	@ApiModelProperty("核销类型及数量")
+	private BigInteger[] WriteOffQuantity;
+
 }

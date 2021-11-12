@@ -15,12 +15,10 @@ import java.math.BigInteger;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@ApiModel(value="RenewDo",description="NFT续费数据")
+@ApiModel(value="RenewVo",description="NFT续费数据")
 public class RenewVo {
 
-	@ApiModelProperty("续费代币")
-	private BigInteger tokenId;
+	@ApiModelProperty("是否续费成功")
+	private boolean renewSuccess;
 
-	@ApiModelProperty("有效期截至时间")
-	private BigInteger renewTime;
 }

@@ -18,6 +18,12 @@ import java.math.BigInteger;
 @ApiModel(value="RenewDo",description="NFT续费数据")
 public class RenewDo {
 
+	@ApiModelProperty("私钥")
+	private String privateKey;
+
+	@ApiModelProperty("合约地址")
+	private String contractAddress;
+
 	@ApiModelProperty("续费代币")
 	private BigInteger tokenId;
 

@@ -18,6 +18,12 @@ import java.math.BigInteger;
 @ApiModel(value="WriteOffDo",description="NFT核销数据")
 public class WriteOffDo {
 
+	@ApiModelProperty("私钥")
+	private String privateKey;
+
+	@ApiModelProperty("合约地址")
+	private String contractAddress;
+
 	@ApiModelProperty("核销类型")
 	private BigInteger index;
 

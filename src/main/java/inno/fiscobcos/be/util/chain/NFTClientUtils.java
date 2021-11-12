@@ -2,10 +2,6 @@ package inno.fiscobcos.be.util.chain;
 
 import inno.fiscobcos.be.constant.Config;
 import inno.fiscobcos.be.constant.Constant;
-import org.fisco.bcos.sdk.abi.datatypes.Bool;
-import org.fisco.bcos.sdk.abi.datatypes.Utf8String;
-import org.fisco.bcos.sdk.abi.datatypes.generated.Uint256;
-import org.fisco.bcos.sdk.abi.wrapper.ABIObject;
 import org.fisco.bcos.sdk.transaction.model.dto.CallResponse;
 import org.fisco.bcos.sdk.transaction.model.dto.TransactionResponse;
 import org.slf4j.Logger;
@@ -17,7 +13,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author peifeng
@@ -56,15 +51,14 @@ public class NFTClientUtils extends ClientUtils {
 	}
 
 	public List<BigInteger> batchMint(String contractAddress,String privateKey,BigInteger supply,String tokenURI) throws Exception {
-		TransactionResponse response;
-		List<BigInteger> list = new ArrayList<>();
+		List<BigInteger> list;
 		transactionProcessor = getAssembleTransactionProcessor(privateKey, config.abiFilePath, config.binFilePath);
 		List<Object> params = new ArrayList<>();
 		params.add(supply);
 		params.add(tokenURI);
 		logger.info("state:{},functionName:{},params:{}","ready","batchMint",params);
-		response = transactionProcessor.sendTransactionAndGetResponseByContractLoader(Constant.CONTRACT_NAME, contractAddress, "batchMint", params);
-		if(response.getReceiptMessages().equals("Success")){
+		TransactionResponse response = transactionProcessor.sendTransactionAndGetResponseByContractLoader(Constant.CONTRACT_NAME, contractAddress, "batchMint", params);
+		if(response.getReceiptMessages().equals(Constant.SUCCESS)){
 			List<Object> returnABIObjects = response.getReturnObject();
 			list = (List<BigInteger>) returnABIObjects.get(0);
 			Iterator<BigInteger> it = list.iterator();
@@ -80,129 +74,105 @@ public class NFTClientUtils extends ClientUtils {
 		return list;
 	}
 
-	public Boolean batchSell(String contractAddress, String privateKey, BigInteger[] tokenIds, String to, BigInteger expirationTime) throws Exception{
-		TransactionResponse response;
-		List<BigInteger> list = new ArrayList<>();
+	public boolean batchSell(String contractAddress, String privateKey, BigInteger[] tokenIds, String to, BigInteger expirationTime) throws Exception{
 		transactionProcessor = getAssembleTransactionProcessor(privateKey, config.abiFilePath, config.binFilePath);
 		List<Object> params = new ArrayList<>();
 		params.add(tokenIds);
 		params.add(to);
 		params.add(expirationTime);
 		logger.info("state:{},functionName:{},params:{}","ready","batchSell",params);
-		response = transactionProcessor.sendTransactionAndGetResponseByContractLoader(Constant.CONTRACT_NAME, contractAddress, "batchSell", params);
-		if(response.getReceiptMessages().equals("Success")){
-			List<Object> returnABIObjects = response.getReturnObject();
-			list = (List<BigInteger>) returnABIObjects.get(0);
-			Iterator<BigInteger> it = list.iterator();
-			while(it.hasNext()){
-				if(it.next().intValue() == 0){
-					it.remove();
-				}
-			}
-			logger.info("state:{},functionName:{},result:{}","success","batchMint",list);
+		TransactionResponse response = transactionProcessor.sendTransactionAndGetResponseByContractLoader(Constant.CONTRACT_NAME, contractAddress, "batchSell", params);
+		boolean result;
+		if(response.getReceiptMessages().equals(Constant.SUCCESS)){
+			result = response.getValues().equals(Constant.TRUE);
+			logger.info("state:{},functionName:{},result:{}","success","batchSell",result);
 		}else{
 			throw new Exception(response.getReceiptMessages());
 		}
-		return false;
+		return result;
 	}
 
 	public boolean renew(String contractAddress, String privateKey, BigInteger tokenId, BigInteger renewTime) throws Exception {
-		TransactionResponse response;
-		List<BigInteger> list = new ArrayList<>();
 		transactionProcessor = getAssembleTransactionProcessor(privateKey, config.abiFilePath, config.binFilePath);
 		List<Object> params = new ArrayList<>();
 		params.add(tokenId);
 		params.add(renewTime);
-		logger.info("state:{},functionName:{},params:{}","ready","batchSell",params);
-		response = transactionProcessor.sendTransactionAndGetResponseByContractLoader(Constant.CONTRACT_NAME, contractAddress, "batchSell", params);
-		if(response.getReceiptMessages().equals("Success")){
-			List<Object> returnABIObjects = response.getReturnObject();
-			list = (List<BigInteger>) returnABIObjects.get(0);
-			Iterator<BigInteger> it = list.iterator();
-			while(it.hasNext()){
-				if(it.next().intValue() == 0){
-					it.remove();
-				}
-			}
-			logger.info("state:{},functionName:{},result:{}","success","batchMint",list);
+		logger.info("state:{},functionName:{},params:{}","ready","renew",params);
+		TransactionResponse response = transactionProcessor.sendTransactionAndGetResponseByContractLoader(Constant.CONTRACT_NAME, contractAddress, "renew", params);
+		boolean result;
+		if(response.getReceiptMessages().equals(Constant.SUCCESS)){
+			result = response.getValues().equals(Constant.TRUE);
+			logger.info("state:{},functionName:{},result:{}","success","renew",result);
 		}else{
 			throw new Exception(response.getReceiptMessages());
 		}
-		return false;
+		return result;
 	}
 
 	public boolean addIssua(String contractAddress, String privateKey, BigInteger addIssuaSupply) throws Exception {
-		TransactionResponse response;
-		List<BigInteger> list = new ArrayList<>();
 		transactionProcessor = getAssembleTransactionProcessor(privateKey, config.abiFilePath, config.binFilePath);
 		List<Object> params = new ArrayList<>();
 		params.add(addIssuaSupply);
-		logger.info("state:{},functionName:{},params:{}","ready","batchSell",params);
-		response = transactionProcessor.sendTransactionAndGetResponseByContractLoader(Constant.CONTRACT_NAME, contractAddress, "batchSell", params);
-		if(response.getReceiptMessages().equals("Success")){
-			List<Object> returnABIObjects = response.getReturnObject();
-			list = (List<BigInteger>) returnABIObjects.get(0);
-			Iterator<BigInteger> it = list.iterator();
-			while(it.hasNext()){
-				if(it.next().intValue() == 0){
-					it.remove();
-				}
-			}
-			logger.info("state:{},functionName:{},result:{}","success","batchMint",list);
+		logger.info("state:{},functionName:{},params:{}","ready","addIssua",params);
+		TransactionResponse response = transactionProcessor.sendTransactionAndGetResponseByContractLoader(Constant.CONTRACT_NAME, contractAddress, "addIssua", params);
+		boolean result;
+		if(response.getReceiptMessages().equals(Constant.SUCCESS)){
+			result = response.getValues().equals(Constant.TRUE);
+			logger.info("state:{},functionName:{},result:{}","success","addIssua",result);
 		}else{
 			throw new Exception(response.getReceiptMessages());
 		}
-		return false;
+		return result;
 	}
 
 	public boolean writeOff(String contractAddress, String privateKey, BigInteger index, BigInteger tokenId, BigInteger supply) throws Exception {
-		TransactionResponse response;
-		List<BigInteger> list = new ArrayList<>();
 		transactionProcessor = getAssembleTransactionProcessor(privateKey, config.abiFilePath, config.binFilePath);
 		List<Object> params = new ArrayList<>();
 		params.add(index);
 		params.add(tokenId);
 		params.add(supply);
-		logger.info("state:{},functionName:{},params:{}","ready","batchSell",params);
-		response = transactionProcessor.sendTransactionAndGetResponseByContractLoader(Constant.CONTRACT_NAME, contractAddress, "batchSell", params);
-		if(response.getReceiptMessages().equals("Success")){
-			List<Object> returnABIObjects = response.getReturnObject();
-			list = (List<BigInteger>) returnABIObjects.get(0);
-			Iterator<BigInteger> it = list.iterator();
-			while(it.hasNext()){
-				if(it.next().intValue() == 0){
-					it.remove();
-				}
-			}
-			logger.info("state:{},functionName:{},result:{}","success","batchMint",list);
+		logger.info("state:{},functionName:{},params:{}","ready","writeOff",params);
+		TransactionResponse response = transactionProcessor.sendTransactionAndGetResponseByContractLoader(Constant.CONTRACT_NAME, contractAddress, "writeOff", params);
+		boolean result;
+		if(response.getReceiptMessages().equals(Constant.SUCCESS)){
+			result = response.getValues().equals(Constant.TRUE);
+			logger.info("state:{},functionName:{},result:{}","success","writeOff",result);
 		}else{
 			throw new Exception(response.getReceiptMessages());
 		}
-		return false;
+		return result;
 	}
 
 	public boolean batchBurn(String contractAddress, String privateKey, BigInteger[] tokenIds) throws Exception {
-		TransactionResponse response;
-		List<BigInteger> list = new ArrayList<>();
 		transactionProcessor = getAssembleTransactionProcessor(privateKey, config.abiFilePath, config.binFilePath);
 		List<Object> params = new ArrayList<>();
 		params.add(tokenIds);
-		logger.info("state:{},functionName:{},params:{}","ready","batchSell",params);
-		response = transactionProcessor.sendTransactionAndGetResponseByContractLoader(Constant.CONTRACT_NAME, contractAddress, "batchSell", params);
-		if(response.getReceiptMessages().equals("Success")){
-			List<Object> returnABIObjects = response.getReturnObject();
-			list = (List<BigInteger>) returnABIObjects.get(0);
-			Iterator<BigInteger> it = list.iterator();
-			while(it.hasNext()){
-				if(it.next().intValue() == 0){
-					it.remove();
-				}
-			}
-			logger.info("state:{},functionName:{},result:{}","success","batchMint",list);
+		logger.info("state:{},functionName:{},params:{}","ready","batchBurn",params);
+		TransactionResponse response = transactionProcessor.sendTransactionAndGetResponseByContractLoader(Constant.CONTRACT_NAME, contractAddress, "batchBurn", params);
+		boolean result;
+		if(response.getReceiptMessages().equals(Constant.SUCCESS)){
+			result = response.getValues().equals(Constant.TRUE);
+			logger.info("state:{},functionName:{},result:{}","success","batchBurn",result);
 		}else{
 			throw new Exception(response.getReceiptMessages());
 		}
-		return false;
+		return result;
+	}
+
+	public boolean setWriteOff(String contractAddress, String privateKey, BigInteger[] vipSupply) throws Exception {
+		transactionProcessor = getAssembleTransactionProcessor(privateKey, config.abiFilePath, config.binFilePath);
+		List<Object> params = new ArrayList<>();
+		params.add(vipSupply);
+		logger.info("state:{},functionName:{},params:{}","ready","setWriteOff",params);
+		TransactionResponse response = transactionProcessor.sendTransactionAndGetResponseByContractLoader(Constant.CONTRACT_NAME, contractAddress, "setWriteOff", params);
+		boolean result;
+		if(response.getReceiptMessages().equals(Constant.SUCCESS)){
+			result = response.getValues().equals(Constant.TRUE);
+			logger.info("state:{},functionName:{},result:{}","success","setWriteOff",result);
+		}else{
+			throw new Exception(response.getReceiptMessages());
+		}
+		return result;
 	}
 
 	public boolean getOverTime(String contractAddress,BigInteger tokenId) throws Exception {

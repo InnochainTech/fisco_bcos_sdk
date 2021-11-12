@@ -18,6 +18,12 @@ import java.math.BigInteger;
 @ApiModel(value="AddIssuaDo",description="NFT增发数据")
 public class AddIssuaDo {
 
+	@ApiModelProperty("私钥")
+	private String privateKey;
+
+	@ApiModelProperty("合约地址")
+	private String contractAddress;
+
 	@ApiModelProperty("增发数量")
 	private BigInteger addIssuaSupply;
 }

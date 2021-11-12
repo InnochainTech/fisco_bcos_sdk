@@ -18,6 +18,12 @@ import java.math.BigInteger;
 @ApiModel(value="BatchBurnDo",description="NFT批量销毁数据")
 public class BatchBurnDo {
 
+	@ApiModelProperty("私钥")
+	private String privateKey;
+
+	@ApiModelProperty("合约地址")
+	private String contractAddress;
+
 	@ApiModelProperty("批量销毁代币数组")
 	private BigInteger[]  tokenIds;
 }

@@ -19,10 +19,11 @@ public class NFTServiceImpl implements NFTService {
 	NFTClientUtils nftClientUtils;
 
 	@Override
-	public String deploy(String privateKey, String name, String symbol, BigInteger totalSupply, String equityLink, Boolean canRenew, Boolean canIssua, Boolean canWriteOff) throws Exception{
+	public String deploy(String privateKey, String name, String symbol, BigInteger totalSupply, String equityLink, Boolean canRenew, Boolean canIssua, Boolean canWriteOff, BigInteger[] WriteOffQuantity) throws Exception{
 		String contractAddr = nftClientUtils.deploy(privateKey,name,symbol,totalSupply,equityLink,canRenew,canIssua,canWriteOff);
 		if(canWriteOff){
 			//设置核销参数
+			nftClientUtils.setWriteOff(contractAddr,privateKey,WriteOffQuantity);
 		}
 		return contractAddr;
 	}

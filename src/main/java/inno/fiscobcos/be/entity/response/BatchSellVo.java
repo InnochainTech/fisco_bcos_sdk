@@ -15,21 +15,9 @@ import java.math.BigInteger;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@ApiModel(value="BatchSellDo",description="NFT批量出售数据")
+@ApiModel(value="BatchSellVo",description="NFT批量出售返回数据")
 public class BatchSellVo {
 
-	@ApiModelProperty("私钥")
-	private String privateKey;
-
-	@ApiModelProperty("合约地址")
-	private String contractAddress;
-
-	@ApiModelProperty("批量出售代币列表")
-	private BigInteger[] tokenIds;
-
-	@ApiModelProperty("购买者地址")
-	private String to;
-
-	@ApiModelProperty("代币有效截至时间")
-	private BigInteger expirationTime;
+	@ApiModelProperty("是否出售成功")
+	private boolean sellSuccess;
 }

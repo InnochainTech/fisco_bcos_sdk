@@ -19,9 +19,10 @@ public interface NFTService {
 	 * @param canRenew
 	 * @param canIssua
 	 * @param canWriteOff
+	 * @param WriteOffQuantity
 	 * @return 铸造的新tokenIds
 	 */
-	String  deploy(String privateKey, String name, String symbol, BigInteger totalSupply,String equityLink, Boolean canRenew,Boolean canIssua,Boolean canWriteOff) throws Exception;
+	String  deploy(String privateKey, String name, String symbol, BigInteger totalSupply,String equityLink, Boolean canRenew,Boolean canIssua,Boolean canWriteOff, BigInteger[] WriteOffQuantity) throws Exception;
 
 	/**
 	 * 批量铸造

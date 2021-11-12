@@ -15,15 +15,9 @@ import java.math.BigInteger;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@ApiModel(value="WriteOffDo",description="NFT核销数据")
+@ApiModel(value="WriteOffVo",description="NFT核销返回数据")
 public class WriteOffVo {
 
-	@ApiModelProperty("核销类型")
-	private BigInteger index;
-
-	@ApiModelProperty("核销某个代币下的会员")
-	private BigInteger tokenId;
-
-	@ApiModelProperty("核销数量")
-	private BigInteger supply;
+	@ApiModelProperty("是否核销成功")
+	private boolean writeOffSuccess;
 }
