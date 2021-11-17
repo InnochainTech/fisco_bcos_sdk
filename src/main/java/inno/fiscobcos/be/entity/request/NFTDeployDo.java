@@ -6,7 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Min;
 import java.math.BigInteger;
+import java.util.List;
 
 /**
  * @author peifeng
@@ -18,31 +20,35 @@ import java.math.BigInteger;
 @ApiModel(value="NFTDeploy",description="NFT合约部署数据")
 public class NFTDeployDo {
 
-	@ApiModelProperty("私钥")
+	@ApiModelProperty(value = "合约管理员私钥（加密后的私钥）" ,required= true)
 	private String privateKey;
 
-	@ApiModelProperty("合约名称")
+	@ApiModelProperty(value = "合约名称" ,required= true)
 	private String name;
 
-	@ApiModelProperty("合约符号")
+	@ApiModelProperty(value = "合约符号" ,required= true)
 	private String symbol;
 
-	@ApiModelProperty("总发行量")
+	@ApiModelProperty(value = "总发行量" ,required= true)
+	@Min(1)
 	private BigInteger totalSupply;
 
-	@ApiModelProperty("权益链接")
+	@ApiModelProperty(value = "权益链接")
 	private String equityLink;
 
-	@ApiModelProperty("是否支持续费")
+	@ApiModelProperty(value = "是否支持续费" ,required= true)
 	private Boolean canRenew;
 
-	@ApiModelProperty("是否支持增发")
-	private Boolean canIssua;
+	/*@ApiModelProperty(value = "是否支持增发" ,required= true)
+	private Boolean canIssua;*/
 
-	@ApiModelProperty("是否支持核销")
+	@ApiModelProperty(value = "是否支持核销" ,required= true)
 	private Boolean canWriteOff;
 
-	@ApiModelProperty("核销类型及数量")
-	private BigInteger[] WriteOffQuantity;
+	@ApiModelProperty(value = "核销类型（下标）及数量（元素值）(支持核销时必填)")
+	private List<@Min(1)BigInteger> writeOffQuantity;
+
+	@ApiModelProperty(value = "初始有效截至时间（不支持续费时必填）(公链秒时间戳，bcos毫秒时间戳)")
+	private BigInteger initialDeadline;
 
 }

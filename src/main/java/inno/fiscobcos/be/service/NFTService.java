@@ -1,5 +1,9 @@
 package inno.fiscobcos.be.service;
 
+import inno.fiscobcos.be.entity.ResponseVo;
+import inno.fiscobcos.be.entity.response.*;
+import inno.fiscobcos.be.util.result.Result;
+
 import java.math.BigInteger;
 import java.util.List;
 
@@ -17,12 +21,12 @@ public interface NFTService {
 	 * @param totalSupply
 	 * @param equityLink
 	 * @param canRenew
-	 * @param canIssua
 	 * @param canWriteOff
 	 * @param WriteOffQuantity
+	 * @param initialDeadline
 	 * @return 铸造的新tokenIds
 	 */
-	String  deploy(String privateKey, String name, String symbol, BigInteger totalSupply,String equityLink, Boolean canRenew,Boolean canIssua,Boolean canWriteOff, BigInteger[] WriteOffQuantity) throws Exception;
+	Result<NFTDeployVo> deploy(String privateKey, String name, String symbol, BigInteger totalSupply, String equityLink, Boolean canRenew, Boolean canWriteOff, List<BigInteger> WriteOffQuantity, BigInteger initialDeadline) ;
 
 	/**
 	 * 批量铸造
@@ -32,7 +36,7 @@ public interface NFTService {
 	 * @param tokenURI
 	 * @return 铸造的新tokenIds
 	 */
-	List<BigInteger>  batchMint(String contractAddress,String privateKey,BigInteger supply, String tokenURI) throws Exception;
+	Result<BatchMintVo>  batchMint(String contractAddress, String privateKey, BigInteger supply, String tokenURI) ;
 
 	/**
 	 * 批量出售
@@ -43,7 +47,17 @@ public interface NFTService {
 	 * @param expirationTime_
 	 * @return
 	 */
-	boolean batchSell(String contractAddress,String privateKey,BigInteger[] tokenIds_, String to_, BigInteger expirationTime_) throws Exception;
+	Result<BatchSellVo> batchSell(String contractAddress, String privateKey, List<BigInteger> tokenIds_, String to_, BigInteger expirationTime_) ;
+
+	/**
+	 * 批量转账
+	 * @param contractAddress
+	 * @param privateKey
+	 * @param tokenIds_
+	 * @param to_
+	 * @return
+	 */
+	Result<BatchTransferVo> batchTransfer(String contractAddress, String privateKey, List<BigInteger> tokenIds_, String to_) ;
 
 	/**
 	 * 续费
@@ -53,7 +67,7 @@ public interface NFTService {
 	 * @param renewTime_
 	 * @return
 	 */
-	boolean renew(String contractAddress,String privateKey,BigInteger tokenId_, BigInteger renewTime_) throws Exception;
+	Result<RenewVo> renew(String contractAddress, String privateKey, BigInteger tokenId_, BigInteger renewTime_) ;
 
 	/**
 	 * 增发
@@ -62,7 +76,7 @@ public interface NFTService {
 	 * @param addIssuaSupply_
 	 * @return
 	 */
-	boolean addIssua(String contractAddress,String privateKey,BigInteger addIssuaSupply_) throws Exception;
+	/*Result<ResponseVo<AddIssuaVo>> addIssua(String contractAddress, String privateKey, BigInteger addIssuaSupply_) ;*/
 
 
 	/**
@@ -74,7 +88,7 @@ public interface NFTService {
 	 * @param supply_
 	 * @return
 	 */
-	boolean writeOff(String contractAddress,String privateKey,BigInteger index_, BigInteger tokenId_, BigInteger supply_) throws Exception;
+	Result<WriteOffVo> writeOff(String contractAddress, String privateKey, BigInteger index_, BigInteger tokenId_, BigInteger supply_) ;
 
 	/**
 	 * 批量销毁
@@ -83,7 +97,7 @@ public interface NFTService {
 	 * @param tokenIds_
 	 * @return
 	 */
-	boolean batchBurn(String contractAddress,String privateKey,BigInteger[]  tokenIds_) throws Exception;
+	Result<BatchBurnVo> batchBurn(String contractAddress, String privateKey, List<BigInteger>  tokenIds_) ;
 
 	/**
 	 * 查看代币是否过期
@@ -92,4 +106,22 @@ public interface NFTService {
 	 * @return
 	 */
 	boolean getOverTime(String contractAddress, BigInteger tokenId) throws Exception;
+
+	BigInteger getExpirationTime(String contractAddress, BigInteger tokenId) throws Exception;
+
+	BigInteger getTotalSupply(String contractAddress)throws Exception;
+
+	boolean getCanRenew(String contractAddress)throws Exception;
+
+	boolean getCanWriteOff(String contractAddress)throws Exception;
+
+	String getEquityLink(String contractAddress)throws Exception;
+
+	BigInteger getTokenMinted(String contractAddress)throws Exception;
+
+	List<BigInteger> getVipSupply(String contractAddress)throws Exception;
+
+	List<BigInteger> getTokenVipSupply(String contractAddress, BigInteger tokenId)throws Exception;
+
+	BigInteger getNow(String contractAddress)throws Exception;
 }

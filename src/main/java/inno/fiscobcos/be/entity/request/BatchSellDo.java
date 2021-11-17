@@ -1,12 +1,16 @@
 package inno.fiscobcos.be.entity.request;
 
+import inno.fiscobcos.be.entity.RequestDo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Pattern;
 import java.math.BigInteger;
+import java.util.List;
 
 /**
  * @author peifeng
@@ -16,20 +20,18 @@ import java.math.BigInteger;
 @NoArgsConstructor
 @Data
 @ApiModel(value="BatchSellDo",description="NFT批量出售数据")
-public class BatchSellDo {
+public class BatchSellDo extends RequestDo {
 
-	@ApiModelProperty("私钥")
+	@ApiModelProperty(value = "合约管理员私钥（加密后的私钥）" ,required= true)
 	private String privateKey;
 
-	@ApiModelProperty("合约地址")
-	private String contractAddress;
+	@ApiModelProperty(value = "批量出售代币列表" ,required= true)
+	private List<@Min(1)BigInteger> tokenIds;
 
-	@ApiModelProperty("批量出售代币列表")
-	private BigInteger[] tokenIds;
-
-	@ApiModelProperty("购买者地址")
+	@ApiModelProperty(value = "购买者地址",required= true)
+	@Pattern(regexp = "^0[xX][0-9a-fA-F]{40}$", message = "合约地址格式错误")
 	private String to;
 
-	@ApiModelProperty("代币有效截至时间")
+	@ApiModelProperty(value = "代币有效截至时间(公链秒时间戳，bcos毫秒时间戳)")
 	private BigInteger expirationTime;
 }

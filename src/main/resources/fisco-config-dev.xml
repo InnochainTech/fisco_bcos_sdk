@@ -8,10 +8,10 @@
     <property name="cryptoMaterial">
         <map>
             <entry key="sslCryptoType" value="0" />
-            <entry key="certPath" value="/home/wanbowen/fisco_bcos_sdk/conf" />
-            <entry key="caCert" value="/home/wanbowen/fisco_bcos_sdk/conf/ca.crt" />
-            <entry key="sslCert" value="/home/wanbowen/fisco_bcos_sdk/conf/sdk.crt" />
-            <entry key="sslKey" value="/home/wanbowen/fisco_bcos_sdk/conf/sdk.key" />
+            <entry key="certPath" value="conf" />
+<!--            <entry key="caCert" value="conf/ca.crt" />-->
+<!--            <entry key="sslCert" value="conf/sdk.crt" />-->
+<!--            <entry key="sslKey" value="conf/sdk.key" />-->
         </map>
     </property>
     <property name="network">

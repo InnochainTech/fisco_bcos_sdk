@@ -1,11 +1,14 @@
 package inno.fiscobcos.be.entity.request;
 
+import inno.fiscobcos.be.entity.RequestDo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Pattern;
 import java.math.BigInteger;
 
 /**
@@ -16,17 +19,15 @@ import java.math.BigInteger;
 @NoArgsConstructor
 @Data
 @ApiModel(value="RenewDo",description="NFT续费数据")
-public class RenewDo {
+public class RenewDo extends RequestDo {
 
-	@ApiModelProperty("私钥")
+	@ApiModelProperty(value = "合约管理员私钥（加密后的私钥）" ,required= true)
 	private String privateKey;
 
-	@ApiModelProperty("合约地址")
-	private String contractAddress;
-
-	@ApiModelProperty("续费代币")
+	@ApiModelProperty(value = "续费代币" ,required= true)
+	@Min(1)
 	private BigInteger tokenId;
 
-	@ApiModelProperty("有效期截至时间")
+	@ApiModelProperty(value = "有效期截至时间(公链秒时间戳，bcos毫秒时间戳)" ,required= true)
 	private BigInteger renewTime;
 }

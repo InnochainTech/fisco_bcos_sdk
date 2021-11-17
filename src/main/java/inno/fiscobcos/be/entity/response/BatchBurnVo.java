@@ -1,5 +1,6 @@
 package inno.fiscobcos.be.entity.response;
 
+import inno.fiscobcos.be.entity.ResponseVo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -16,8 +17,8 @@ import java.math.BigInteger;
 @NoArgsConstructor
 @Data
 @ApiModel(value="BatchBurnVo",description="NFT批量销毁返回数据")
-public class BatchBurnVo {
+public class BatchBurnVo extends ResponseVo {
 
-	@ApiModelProperty("是否销毁成功")
+	@ApiModelProperty(value = "是否销毁成功")
 	private boolean  burnSuccess;
 }

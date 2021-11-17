@@ -7,12 +7,3 @@ spring:
   servlet:
     multipart:
       max-file-size: 50MB
-
-
-filePath:
-  abi: src/main/resources/contract/abi/
-  bin: src/main/resources/contract/bin/
-
-
-contractAddress: 0x55314417d8783b0b6a5a0112999df5721b2f62b2
-privateKey: 619aa0c1b0af1daca2da28aa1dc8f96ebd76b29ed0f0c3b3495cddb1f8a5f30f

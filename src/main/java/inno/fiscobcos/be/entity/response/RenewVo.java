@@ -1,5 +1,6 @@
 package inno.fiscobcos.be.entity.response;
 
+import inno.fiscobcos.be.entity.ResponseVo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -16,7 +17,7 @@ import java.math.BigInteger;
 @NoArgsConstructor
 @Data
 @ApiModel(value="RenewVo",description="NFT续费数据")
-public class RenewVo {
+public class RenewVo extends ResponseVo {
 
 	@ApiModelProperty("是否续费成功")
 	private boolean renewSuccess;

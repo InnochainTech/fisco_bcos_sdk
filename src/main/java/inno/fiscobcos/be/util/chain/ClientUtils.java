@@ -1,5 +1,7 @@
 package inno.fiscobcos.be.util.chain;
 
+import inno.fiscobcos.be.constant.Config;
+import inno.fiscobcos.be.constant.Constant;
 import inno.fiscobcos.be.util.MyAssembleTransactionProcessor;
 import org.apache.commons.lang3.tuple.Pair;
 import org.fisco.bcos.sdk.BcosSDK;
@@ -11,12 +13,14 @@ import org.fisco.bcos.sdk.transaction.manager.TransactionProcessorFactory;
 import org.fisco.bcos.sdk.transaction.tools.ContractLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
+import java.math.BigInteger;
 
 /**
  * @Description: 连接链上 工具类
@@ -30,15 +34,18 @@ public class ClientUtils {
     protected BcosSDK bcosSDK;
     protected Client client;
     //protected CryptoKeyPair cryptoKeyPair;
-    AssembleTransactionProcessor transactionProcessor;
+    protected AssembleTransactionProcessor transactionProcessor;
+
+    @Autowired
+    private Config config;
 
     @PostConstruct
     public void initialize() throws Exception {
         @SuppressWarnings("resource")
-        ApplicationContext context =
-                new ClassPathXmlApplicationContext("classpath:fisco-config.xml");
-        BcosSDK bcosSDK = context.getBean(BcosSDK.class);
-        client = bcosSDK.getClient(1);
+        ApplicationContext context = new ClassPathXmlApplicationContext(config.bcosConfig);
+
+        bcosSDK = context.getBean(BcosSDK.class);
+        client = bcosSDK.getClient(config.bcosGroupId);
         //BlockNumber blockNumber = client.getBlockNumber();
         //System.out.println(blockNumber.getBlockNumber());
 
@@ -69,6 +76,8 @@ public class ClientUtils {
         return new MyAssembleTransactionProcessor(client, createAccount(privateKey), pair.getRight(), pair.getLeft(), contractLoader);
     }
 
+
+
     private String byteToHex(byte num) {
         char[] hexDigits = new char[2];
         hexDigits[0] = Character.forDigit((num >> 4) & 0xF, 16);
@@ -83,4 +92,31 @@ public class ClientUtils {
         }
         return hexStringBuffer.toString();
     }
+
+    /**
+     * 16位转10位数字
+     * @param hex
+     * @return
+     */
+    public static String conver16to10(String hex){
+        String substring = hex.substring(2);
+        String s = substring.replaceAll("^(0+)", "");
+        if(org.springframework.util.StringUtils.isEmpty(s)){
+            return "0";
+        }
+        BigInteger x = BigInteger.valueOf(Long.valueOf(s,16));
+        return x+"";
+    }
+
+    /**
+     * 去掉返回的[]  [1625] ==> 1625
+     * @param str
+     * @return
+     */
+    public static String conver(String str){
+        String s = str.replaceAll("\\[", "").replaceAll("\\]", "");
+        return s;
+    }
+
+
 }

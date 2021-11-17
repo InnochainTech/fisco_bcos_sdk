@@ -1,24 +1,22 @@
 package inno.fiscobcos.be.controller;
 
-import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import inno.fiscobcos.be.constant.Config;
 import inno.fiscobcos.be.constant.Constant;
+import inno.fiscobcos.be.entity.ResponseVo;
 import inno.fiscobcos.be.entity.request.*;
 import inno.fiscobcos.be.entity.response.*;
 import inno.fiscobcos.be.service.NFTService;
+import inno.fiscobcos.be.util.EncrypeUtils;
 import inno.fiscobcos.be.util.result.Result;
 import inno.fiscobcos.be.util.result.ResultUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.fisco.bcos.sdk.utils.StringUtils;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
-import java.util.List;
 
 /**
  * @author peifeng
@@ -30,135 +28,111 @@ import java.util.List;
 public class NFTController {
 
 	@Autowired
-	NFTService nftService;
+	private NFTService nftService;
+
+	@Autowired
+	private Config config;
 
 	@ApiOperation(value = "部署合约")
 	@ResponseBody
 	@PostMapping("/deploy")
 	public Result<NFTDeployVo> deploy(@RequestBody NFTDeployDo nftDeploy){
-		String contractAddr;
-		NFTDeployVo nftDeployVo = new NFTDeployVo();
-		try {
-			contractAddr = nftService.deploy(nftDeploy.getPrivateKey(),nftDeploy.getName(),nftDeploy.getSymbol(),nftDeploy.getTotalSupply(),nftDeploy.getEquityLink(),nftDeploy.getCanRenew(),nftDeploy.getCanIssua(),nftDeploy.getCanWriteOff(),nftDeploy.getWriteOffQuantity());
-			if(StringUtils.isEmpty(contractAddr)){
-				return ResultUtils.error(Constant.ERROR_CODE,"部署失败！！！");
-			}
-			nftDeployVo.setContractAddress(contractAddr);
-		}catch (Exception exception){
-			return ResultUtils.error(Constant.ERROR_CODE,exception.getMessage());
+		String realPrivateKey;
+		try{
+			realPrivateKey = EncrypeUtils.AESDncode(config.encrypeKey,nftDeploy.getPrivateKey());
+		} catch (Exception exception) {
+			return ResultUtils.error(Constant.ERROR_CODE,Constant.AESDNCODE_ERROR);
 		}
+		return nftService.deploy(realPrivateKey,nftDeploy.getName(),nftDeploy.getSymbol(),nftDeploy.getTotalSupply(),nftDeploy.getEquityLink(),nftDeploy.getCanRenew(),nftDeploy.getCanWriteOff(),nftDeploy.getWriteOffQuantity(),nftDeploy.getInitialDeadline());
 
-		return ResultUtils.success(nftDeployVo);
+
 	}
 
 	@ApiOperation(value = "批量铸造")
 	@ResponseBody
 	@PostMapping("/batchMint")
 	public Result<BatchMintVo> batchMint(@RequestBody BatchMintDo batchMintDo) {
-		List<BigInteger> tokenIds;
-		BatchMintVo batchMintVo = new BatchMintVo();
+		String realPrivateKey;
 		try{
-			tokenIds = nftService.batchMint(batchMintDo.getContractAddress(), batchMintDo.getPrivateKey(), batchMintDo.getSupply(), batchMintDo.getTokenURI());
-			if(CollectionUtils.isEmpty(tokenIds)){
-				return ResultUtils.error(Constant.ERROR_CODE,"铸造失败！！！");
-			}
-			batchMintVo.setTokenIds(tokenIds);
-		}catch (Exception exception){
-			return ResultUtils.error(Constant.ERROR_CODE,exception.getMessage());
+			realPrivateKey = EncrypeUtils.AESDncode(config.encrypeKey,batchMintDo.getPrivateKey());
+		} catch (Exception exception) {
+			return ResultUtils.error(Constant.ERROR_CODE,Constant.AESDNCODE_ERROR);
 		}
-
-		return ResultUtils.success(batchMintVo);
+		return nftService.batchMint(batchMintDo.getContractAddress(), realPrivateKey, batchMintDo.getSupply(), batchMintDo.getTokenURI());
 	}
-
 
 	@ApiOperation(value = "批量出售")
 	@ResponseBody
 	@PostMapping("/batchSell")
 	public Result<BatchSellVo> batchSell(@RequestBody BatchSellDo batchSellDo) {
-		BatchSellVo batchSellVo = new BatchSellVo();
+		String realPrivateKey;
 		try{
-			boolean sellSuccess = nftService.batchSell(batchSellDo.getContractAddress(),batchSellDo.getPrivateKey(),batchSellDo.getTokenIds(),batchSellDo.getTo(),batchSellDo.getExpirationTime());
-			if(!sellSuccess){
-				return ResultUtils.error(Constant.ERROR_CODE,"出售失败！！！");
-			}
-			batchSellVo.setSellSuccess(sellSuccess);
-		}catch (Exception exception){
-			return ResultUtils.error(Constant.ERROR_CODE,exception.getMessage());
+			realPrivateKey = EncrypeUtils.AESDncode(config.encrypeKey,batchSellDo.getPrivateKey());
+		} catch (Exception exception) {
+			return ResultUtils.error(Constant.ERROR_CODE,Constant.AESDNCODE_ERROR);
 		}
+		return nftService.batchSell(batchSellDo.getContractAddress(),realPrivateKey,batchSellDo.getTokenIds(),batchSellDo.getTo(),batchSellDo.getExpirationTime());
+	}
 
-		return ResultUtils.success(batchSellVo);
+	@ApiOperation(value = "批量转账")
+	@ResponseBody
+	@PostMapping("/batchTransfer")
+	public Result<BatchTransferVo> batchSell(@RequestBody BatchTransferDo batchTransferDo) {
+		String realPrivateKey;
+		try{
+			realPrivateKey = EncrypeUtils.AESDncode(config.encrypeKey,batchTransferDo.getPrivateKey());
+		} catch (Exception exception) {
+			return ResultUtils.error(Constant.ERROR_CODE,Constant.AESDNCODE_ERROR);
+		}
+		return nftService.batchTransfer(batchTransferDo.getContractAddress(),realPrivateKey,batchTransferDo.getTokenIds(),batchTransferDo.getTo());
+
 	}
 
 	@ApiOperation(value = "续费")
 	@ResponseBody
 	@PostMapping("/renew")
 	public Result<RenewVo> renew(@RequestBody RenewDo renewDo) {
-		RenewVo renewVo = new RenewVo();
+		String realPrivateKey;
 		try{
-			boolean renewSuccess = nftService.renew(renewDo.getContractAddress(), renewDo.getPrivateKey(), renewDo.getTokenId(),renewDo.getRenewTime() );
-			if(!renewSuccess){
-				return ResultUtils.error(Constant.ERROR_CODE,"续费失败！！！");
-			}
-			renewVo.setRenewSuccess(renewSuccess);
-		}catch (Exception exception){
-			return ResultUtils.error(Constant.ERROR_CODE,exception.getMessage());
+			realPrivateKey = EncrypeUtils.AESDncode(config.encrypeKey,renewDo.getPrivateKey());
+		} catch (Exception exception) {
+			return ResultUtils.error(Constant.ERROR_CODE,Constant.AESDNCODE_ERROR);
 		}
-
-		return ResultUtils.success(renewVo);
+		return nftService.renew(renewDo.getContractAddress(), realPrivateKey, renewDo.getTokenId(),renewDo.getRenewTime() );
 	}
 
-	@ApiOperation(value = "增发")
+	/*@ApiOperation(value = "增发")
 	@ResponseBody
 	@PostMapping("/addIssua")
-	public Result<AddIssuaVo> addIssua(@RequestBody AddIssuaDo addIssuaDo) {
-		AddIssuaVo addIssuaVo = new AddIssuaVo();
-		try{
-			boolean addIssuaSuccess = nftService.addIssua(addIssuaDo.getContractAddress(),addIssuaDo.getPrivateKey(),addIssuaDo.getAddIssuaSupply());
-			if(!addIssuaSuccess){
-				return ResultUtils.error(Constant.ERROR_CODE,"增发失败！！！");
-			}
-			addIssuaVo.setIssuaSuccess(addIssuaSuccess);
-		}catch (Exception exception){
-			return ResultUtils.error(Constant.ERROR_CODE,exception.getMessage());
-		}
-
-		return ResultUtils.success(addIssuaVo);
-	}
-
+	public Result<ResponseVo<AddIssuaVo>> addIssua(@RequestBody AddIssuaDo addIssuaDo) {
+		return nftService.addIssua(addIssuaDo.getContractAddress(),addIssuaDo.getPrivateKey(),addIssuaDo.getAddIssuaSupply());
+	}*/
 
 	@ApiOperation(value = "核销")
 	@ResponseBody
 	@PostMapping("/writeOff")
 	public Result<WriteOffVo> writeOff(@RequestBody WriteOffDo writeOffDo) {
-		WriteOffVo writeOffVo = new WriteOffVo();
+		String realPrivateKey;
 		try{
-			boolean writeOffSuccess = nftService.writeOff(writeOffDo.getContractAddress(), writeOffDo.getPrivateKey(), writeOffDo.getIndex(), writeOffDo.getTokenId(), writeOffDo.getSupply());
-			if(!writeOffSuccess){
-				return ResultUtils.error(Constant.ERROR_CODE,"核销失败！！！");
-			}
-			writeOffVo.setWriteOffSuccess(writeOffSuccess);
-		}catch (Exception exception){
-			return ResultUtils.error(Constant.ERROR_CODE,exception.getMessage());
+			realPrivateKey = EncrypeUtils.AESDncode(config.encrypeKey,writeOffDo.getPrivateKey());
+		} catch (Exception exception) {
+			return ResultUtils.error(Constant.ERROR_CODE,Constant.AESDNCODE_ERROR);
 		}
-
-		return ResultUtils.success(writeOffVo);
+		return nftService.writeOff(writeOffDo.getContractAddress(), realPrivateKey, writeOffDo.getIndex(), writeOffDo.getTokenId(), writeOffDo.getSupply());
 	}
 
 	@ApiOperation(value = "批量销毁")
 	@ResponseBody
 	@PostMapping("/batchBurn")
 	public Result<BatchBurnVo> batchBurn(@RequestBody BatchBurnDo batchBurnDo) {
-		BatchBurnVo batchBurnVo = new BatchBurnVo();
+		String realPrivateKey;
 		try{
-			boolean burnSuccess = nftService.batchBurn(batchBurnDo.getContractAddress(), batchBurnDo.getPrivateKey(), batchBurnDo.getTokenIds());
-			if(!burnSuccess){
-				return ResultUtils.error(Constant.ERROR_CODE,"销毁失败！！！");
-			}
-			batchBurnVo.setBurnSuccess(burnSuccess);
-		}catch (Exception exception){
-			return ResultUtils.error(Constant.ERROR_CODE,exception.getMessage());
+			realPrivateKey = EncrypeUtils.AESDncode(config.encrypeKey,batchBurnDo.getPrivateKey());
+		} catch (Exception exception) {
+			return ResultUtils.error(Constant.ERROR_CODE,Constant.AESDNCODE_ERROR);
 		}
-
-		return ResultUtils.success(batchBurnVo);
+		return nftService.batchBurn(batchBurnDo.getContractAddress(), realPrivateKey, batchBurnDo.getTokenIds());
 	}
+
+
 }

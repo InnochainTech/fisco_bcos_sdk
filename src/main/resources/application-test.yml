@@ -15,6 +15,7 @@ spring:
 
 #rocketMQ
 rocketmq:
+  work: false
   #producer
   producer:
     groupName: chain-service-group
@@ -31,3 +32,11 @@ rocketmq:
     consumeMessageBatchMaxSize: 1
 #rocketmq.name-server = 192.168.33.10:8080
 #rocketmq.producer.group = chain-producer-group
+
+filePath:
+  abi: /home/wanbowen/fisco_bcos_sdk/src/main/resources/contract/abi/
+  bin: /home/wanbowen/fisco_bcos_sdk/src/main/resources/contract/bin/
+
+bcos:
+  config: classpath:fisco-config.xml
+  groupId: 1

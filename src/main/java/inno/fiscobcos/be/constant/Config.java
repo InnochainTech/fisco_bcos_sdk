@@ -18,4 +18,13 @@ public class Config {
 
 	@Value("${rocketmq.work}")
 	public Boolean rocketmqWork;
+
+	@Value("${encrype.key}")
+	public String encrypeKey;
+
+	@Value("${bcos.config}")
+	public String bcosConfig;
+
+	@Value("${bcos.groupId}")
+	public Integer bcosGroupId;
 }

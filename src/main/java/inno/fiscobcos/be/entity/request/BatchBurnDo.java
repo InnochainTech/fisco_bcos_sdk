@@ -1,12 +1,16 @@
 package inno.fiscobcos.be.entity.request;
 
+import inno.fiscobcos.be.entity.RequestDo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Pattern;
 import java.math.BigInteger;
+import java.util.List;
 
 /**
  * @author peifeng
@@ -16,14 +20,11 @@ import java.math.BigInteger;
 @NoArgsConstructor
 @Data
 @ApiModel(value="BatchBurnDo",description="NFT批量销毁数据")
-public class BatchBurnDo {
+public class BatchBurnDo extends RequestDo {
 
-	@ApiModelProperty("私钥")
+	@ApiModelProperty(value = "NFT拥有者私钥（加密后的私钥）" ,required= true)
 	private String privateKey;
 
-	@ApiModelProperty("合约地址")
-	private String contractAddress;
-
-	@ApiModelProperty("批量销毁代币数组")
-	private BigInteger[]  tokenIds;
+	@ApiModelProperty(value = "批量销毁代币数组" ,required= true)
+	private List<@Min(1) BigInteger> tokenIds;
 }

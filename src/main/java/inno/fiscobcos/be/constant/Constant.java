@@ -13,4 +13,8 @@ public class Constant {
 
 	public static final String TRUE = "[true]";
 
+	public static final String AESDNCODE_ERROR = "解密私钥失败！！！";
+
+	public static final String SPRING_PROFILES_ACTIVE_DEV = "dev";
+
 }

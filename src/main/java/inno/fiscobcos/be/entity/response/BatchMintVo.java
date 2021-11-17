@@ -1,5 +1,6 @@
 package inno.fiscobcos.be.entity.response;
 
+import inno.fiscobcos.be.entity.ResponseVo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -17,8 +18,8 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 @ApiModel(value="BatchMintVo",description="NFT批量铸造返回数据")
-public class BatchMintVo {
+public class BatchMintVo extends ResponseVo {
 
-	@ApiModelProperty("tokenIds")
+	@ApiModelProperty(value = "铸造成功返回的tokenIds")
 	private List<BigInteger> tokenIds;
 }
