@@ -33,10 +33,13 @@ rocketmq:
 #rocketmq.name-server = 192.168.33.10:8080
 #rocketmq.producer.group = chain-producer-group
 
+encrype:
+  key: dev-key
+
 filePath:
-  abi: /home/wanbowen/fisco_bcos_sdk/src/main/resources/contract/abi/
-  bin: /home/wanbowen/fisco_bcos_sdk/src/main/resources/contract/bin/
+  abi: contract/abi/
+  bin: contract/bin/
 
 bcos:
-  config: classpath:fisco-config.xml
+  config: classpath:fisco-config-test.xml
   groupId: 1
