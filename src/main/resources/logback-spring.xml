@@ -85,7 +85,6 @@
 
     </springProfile>
 
-
     <!-- 生产环境 -->
     <springProfile name="prod">
         <!-- 每天产生一个文件 -->
@@ -151,4 +150,19 @@
 <!--            <appender-ref ref="mqAppender2"/>-->
         </root>
     </springProfile>
+
+    <!--    第三方jar日志屏蔽-->
+    <logger name="org.fisco.bcos.sdk.abi.wrapper.ABIDefinitionFactory" level="OFF">
+    </logger>
+    <logger name="org.fisco.bcos.sdk.abi.wrapper.ContractABIDefinition" level="OFF">
+    </logger>
+    <logger name="org.fisco.bcos.sdk.abi.wrapper.ABIObjectFactory" level="OFF">
+    </logger>
+    <logger name="org.springframework.web.servlet.DispatcherServlet" level="OFF">
+    </logger>
+    <logger name="org.fisco.bcos.sdk.crypto.keystore.KeyTool" level="OFF">
+    </logger>
+
+
+
 </configuration>

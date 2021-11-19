@@ -127,5 +127,5 @@ public interface NFTService {
 
 	String getName(String contractAddress)throws Exception;
 
-	List<BigInteger> getTokens(String contractAddress, BigInteger tokenId) throws Exception;
+	List<BigInteger> getTokens(String contractAddress, String accountAddress) throws Exception;
 }

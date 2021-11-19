@@ -157,11 +157,11 @@ public class NFTGetController {
 	public Result getTokens(@ApiParam(name="contractAddress",value="合约地址",required = true)
 									@RequestParam(value = "contractAddress", required = true)
 									@Pattern(regexp = "^0[xX][0-9a-fA-F]{40}$", message = "合约地址格式错误") String contractAddress,
-									@ApiParam(name="tokenId",value="tokenId",required = true)
-									@RequestParam(value = "tokenId", required = true)
-									@Min(1)BigInteger tokenId
+									@ApiParam(name="accountAddress",value="查询地址",required = true)
+									@RequestParam(value = "accountAddress", required = true)
+									@Pattern(regexp = "^0[xX][0-9a-fA-F]{40}$", message = "查询地址格式错误") String accountAddress
 	) throws Exception{
-		return ResultUtils.success(nftService.getTokens(contractAddress,tokenId));
+		return ResultUtils.success(nftService.getTokens(contractAddress,accountAddress));
 	}
 
 

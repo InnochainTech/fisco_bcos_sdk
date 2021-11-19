@@ -25,7 +25,7 @@ public class BatchTransferDo extends RequestDo {
 	@ApiModelProperty(value = "NFT拥有者私钥（加密后的私钥）" ,required= true)
 	private String privateKey;
 
-	@ApiModelProperty(value = "批量出售代币列表(目前最多40个)" ,required= true)
+	@ApiModelProperty(value = "批量出售代币列表(目前最多150个，数量越多返回速度越慢，建议传50个)" ,required= true)
 	private List<@Min(1)BigInteger> tokenIds;
 
 	@ApiModelProperty(value = "转账接受者地址" ,required= true)

@@ -23,31 +23,35 @@ public class NFTServiceImpl implements NFTService {
 
 	@Override
 	public Result<NFTDeployVo> deploy(String privateKey, String name, String symbol, BigInteger totalSupply, String equityLink, Boolean canRenew, Boolean canWriteOff, List<BigInteger> WriteOffQuantity, BigInteger initialDeadline) {
-		Result<NFTDeployVo> result = nftClientUtils.deploy(privateKey,name,symbol,totalSupply,equityLink,canRenew,canWriteOff);
+		String orderId = System.currentTimeMillis()+"";
+		Result<NFTDeployVo> result = nftClientUtils.deploy(orderId,privateKey,name,symbol,totalSupply,equityLink,canRenew,canWriteOff);
 		if(!canRenew){
 			//设置初始有效截至时间
-			result.getData().setSetInitialDeadlineSuccess(nftClientUtils.setInitialDeadline(result.getData().getContractAddress(),privateKey,initialDeadline));
+			result.getData().setSetInitialDeadlineSuccess(nftClientUtils.setInitialDeadline(orderId,result.getData().getContractAddress(),privateKey,initialDeadline));
 		}
 		if(canWriteOff){
 			//设置核销参数
-			result.getData().setSetWriteOffSuccess(nftClientUtils.setWriteOff(result.getData().getContractAddress(),privateKey,WriteOffQuantity));
+			result.getData().setSetWriteOffSuccess(nftClientUtils.setWriteOff(orderId,result.getData().getContractAddress(),privateKey,WriteOffQuantity));
 		}
 		return result;
 	}
 
 	@Override
 	public Result<BatchMintVo> batchMint(String contractAddress, String privateKey, BigInteger supply, String tokenURI) {
-		return nftClientUtils.batchMint(contractAddress, privateKey, supply, tokenURI);
+		String orderId = System.currentTimeMillis()+"";
+		return nftClientUtils.batchMint(orderId, contractAddress, privateKey, supply, tokenURI);
 	}
 
 	@Override
 	public Result<BatchSellVo> batchSell(String contractAddress, String privateKey, List<BigInteger> tokenIds, String to, BigInteger expirationTime) {
-		return nftClientUtils.batchSell( contractAddress,  privateKey,  tokenIds,  to,  expirationTime);
+		String orderId = System.currentTimeMillis()+"";
+		return nftClientUtils.batchSell(orderId, contractAddress,  privateKey,  tokenIds,  to,  expirationTime);
 	}
 
 	@Override
 	public Result<RenewVo> renew(String contractAddress, String privateKey, BigInteger tokenId, BigInteger renewTime) {
-		return nftClientUtils.renew(contractAddress,  privateKey,  tokenId,  renewTime);
+		String orderId = System.currentTimeMillis()+"";
+		return nftClientUtils.renew(orderId, contractAddress,  privateKey,  tokenId,  renewTime);
 	}
 
 	/*@Override
@@ -57,17 +61,20 @@ public class NFTServiceImpl implements NFTService {
 
 	@Override
 	public Result<WriteOffVo> writeOff(String contractAddress, String privateKey, BigInteger index, BigInteger tokenId, BigInteger supply) {
-		return nftClientUtils.writeOff(contractAddress,  privateKey,  index,  tokenId,  supply);
+		String orderId = System.currentTimeMillis()+"";
+		return nftClientUtils.writeOff(orderId, contractAddress,  privateKey,  index,  tokenId,  supply);
 	}
 
 	@Override
 	public Result<BatchBurnVo> batchBurn(String contractAddress, String privateKey, List<BigInteger> tokenIds) {
-		return nftClientUtils.batchBurn(contractAddress, privateKey, tokenIds);
+		String orderId = System.currentTimeMillis()+"";
+		return nftClientUtils.batchBurn(orderId, contractAddress, privateKey, tokenIds);
 	}
 
 	@Override
 	public Result<BatchTransferVo> batchTransfer(String contractAddress, String privateKey, List<BigInteger> tokenIds_, String to_)  {
-		return nftClientUtils.batchTransfer(contractAddress, privateKey, tokenIds_ , to_);
+		String orderId = System.currentTimeMillis()+"";
+		return nftClientUtils.batchTransfer(orderId, contractAddress, privateKey, tokenIds_ , to_);
 	}
 
 	@Override
@@ -126,8 +133,8 @@ public class NFTServiceImpl implements NFTService {
 	}
 
 	@Override
-	public List<BigInteger> getTokens(String contractAddress, BigInteger tokenId) throws Exception {
-		return nftClientUtils.getTokens(contractAddress,tokenId);
+	public List<BigInteger> getTokens(String contractAddress, String accountAddress) throws Exception {
+		return nftClientUtils.getTokens(contractAddress,accountAddress);
 	}
 
 

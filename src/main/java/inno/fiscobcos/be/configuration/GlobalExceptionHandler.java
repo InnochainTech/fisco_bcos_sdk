@@ -4,12 +4,14 @@ import inno.fiscobcos.be.util.result.Result;
 import inno.fiscobcos.be.util.result.ResultUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 
 /**
  * @description: 自定义异常处理
@@ -45,6 +47,19 @@ public class GlobalExceptionHandler  {
     public Result exceptionHandler(HttpServletRequest req, MethodArgumentNotValidException e){
         logger.error("方法参数异常！原因是:",e);
         return ResultUtils.error(300,"输入参数异常！原因是:"+e.getBindingResult().getAllErrors().get(0).getDefaultMessage());
+    }
+
+    /**
+     * 合约参数格式异常
+     * @param req
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(value = HttpMessageNotReadableException.class)
+    @ResponseBody
+    public Result exceptionHandler(HttpServletRequest req, HttpMessageNotReadableException e) throws IOException {
+        logger.error("请求传递的参数不可读！原因是:",e);
+        return ResultUtils.error(300,"请求传递的参数不可读！:"+e.getMessage());
     }
 
     /**

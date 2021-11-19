@@ -25,6 +25,6 @@ public class BatchBurnDo extends RequestDo {
 	@ApiModelProperty(value = "NFT拥有者私钥（加密后的私钥）" ,required= true)
 	private String privateKey;
 
-	@ApiModelProperty(value = "批量销毁代币数组(目前最多40个)" ,required= true)
+	@ApiModelProperty(value = "批量销毁代币数组(目前最大支持200个，数量越多返回速度越慢，建议传50个)" ,required= true)
 	private List<@Min(1) BigInteger> tokenIds;
 }

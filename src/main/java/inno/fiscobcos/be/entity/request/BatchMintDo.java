@@ -27,7 +27,7 @@ public class BatchMintDo extends RequestDo {
 	private String privateKey;
 
 	@Valid
-	@ApiModelProperty(value = "铸造数量" ,required= true)
+	@ApiModelProperty(value = "铸造数量(目前最大支持150个)" ,required= true)
 	@Min(1)
 	private BigInteger supply;
 
