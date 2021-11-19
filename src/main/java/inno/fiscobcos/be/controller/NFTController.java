@@ -7,7 +7,6 @@ import inno.fiscobcos.be.entity.response.*;
 import inno.fiscobcos.be.service.NFTService;
 import inno.fiscobcos.be.util.EncrypeUtils;
 import inno.fiscobcos.be.util.result.Result;
-import inno.fiscobcos.be.util.result.ResultUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +15,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -42,9 +44,15 @@ public class NFTController {
 		try{
 			realPrivateKey = EncrypeUtils.AESDncode(config.encrypeKey,nftDeploy.getPrivateKey());
 		} catch (Exception exception) {
-			return ResultUtils.error(Constant.ERROR_CODE,Constant.AESDNCODE_ERROR);
+			return new Result().error(Constant.ERROR_CODE,Constant.AESDNCODE_ERROR);
 		}
-		return nftService.deploy(realPrivateKey,nftDeploy.getName(),nftDeploy.getSymbol(),nftDeploy.getTotalSupply(),nftDeploy.getEquityLink(),nftDeploy.getCanRenew(),nftDeploy.getCanWriteOff(),nftDeploy.getWriteOffQuantity(),nftDeploy.getInitialDeadline());
+		List<BigInteger> types = new ArrayList<>();
+		List<BigInteger> supply = new ArrayList<>();
+		for(InitWriteOffDo initWriteOffDo : nftDeploy.getInitWriteOff()){
+			types.add(initWriteOffDo.getType());
+			supply.add(initWriteOffDo.getSupply());
+		}
+		return nftService.deploy(realPrivateKey,nftDeploy.getName(),nftDeploy.getSymbol(),nftDeploy.getTotalSupply(),nftDeploy.getEquityLink(),nftDeploy.getCanRenew(),nftDeploy.getCanWriteOff(),types,supply,nftDeploy.getInitialDeadline());
 	}
 
 	@ApiOperation(value = "批量铸造")
@@ -55,7 +63,7 @@ public class NFTController {
 		try{
 			realPrivateKey = EncrypeUtils.AESDncode(config.encrypeKey,batchMintDo.getPrivateKey());
 		} catch (Exception exception) {
-			return ResultUtils.error(Constant.ERROR_CODE,Constant.AESDNCODE_ERROR);
+			return new Result().error(Constant.ERROR_CODE,Constant.AESDNCODE_ERROR);
 		}
 		return nftService.batchMint(batchMintDo.getContractAddress(), realPrivateKey, batchMintDo.getSupply(), batchMintDo.getTokenURI());
 	}
@@ -68,7 +76,7 @@ public class NFTController {
 		try{
 			realPrivateKey = EncrypeUtils.AESDncode(config.encrypeKey,batchSellDo.getPrivateKey());
 		} catch (Exception exception) {
-			return ResultUtils.error(Constant.ERROR_CODE,Constant.AESDNCODE_ERROR);
+			return new Result().error(Constant.ERROR_CODE,Constant.AESDNCODE_ERROR);
 		}
 		return nftService.batchSell(batchSellDo.getContractAddress(),realPrivateKey,batchSellDo.getTokenIds(),batchSellDo.getTo(),batchSellDo.getExpirationTime());
 	}
@@ -81,7 +89,7 @@ public class NFTController {
 		try{
 			realPrivateKey = EncrypeUtils.AESDncode(config.encrypeKey,batchTransferDo.getPrivateKey());
 		} catch (Exception exception) {
-			return ResultUtils.error(Constant.ERROR_CODE,Constant.AESDNCODE_ERROR);
+			return new Result().error(Constant.ERROR_CODE,Constant.AESDNCODE_ERROR);
 		}
 		return nftService.batchTransfer(batchTransferDo.getContractAddress(),realPrivateKey,batchTransferDo.getTokenIds(),batchTransferDo.getTo());
 
@@ -95,7 +103,7 @@ public class NFTController {
 		try{
 			realPrivateKey = EncrypeUtils.AESDncode(config.encrypeKey,renewDo.getPrivateKey());
 		} catch (Exception exception) {
-			return ResultUtils.error(Constant.ERROR_CODE,Constant.AESDNCODE_ERROR);
+			return new Result().error(Constant.ERROR_CODE,Constant.AESDNCODE_ERROR);
 		}
 		return nftService.renew(renewDo.getContractAddress(), realPrivateKey, renewDo.getTokenId(),renewDo.getRenewTime() );
 	}
@@ -115,9 +123,9 @@ public class NFTController {
 		try{
 			realPrivateKey = EncrypeUtils.AESDncode(config.encrypeKey,writeOffDo.getPrivateKey());
 		} catch (Exception exception) {
-			return ResultUtils.error(Constant.ERROR_CODE,Constant.AESDNCODE_ERROR);
+			return new Result().error(Constant.ERROR_CODE,Constant.AESDNCODE_ERROR);
 		}
-		return nftService.writeOff(writeOffDo.getContractAddress(), realPrivateKey, writeOffDo.getIndex(), writeOffDo.getTokenId(), writeOffDo.getSupply());
+		return nftService.writeOff(writeOffDo.getContractAddress(), realPrivateKey, writeOffDo.getType(), writeOffDo.getTokenId(), writeOffDo.getSupply());
 	}
 
 	@ApiOperation(value = "批量销毁")
@@ -128,7 +136,7 @@ public class NFTController {
 		try{
 			realPrivateKey = EncrypeUtils.AESDncode(config.encrypeKey,batchBurnDo.getPrivateKey());
 		} catch (Exception exception) {
-			return ResultUtils.error(Constant.ERROR_CODE,Constant.AESDNCODE_ERROR);
+			return new Result().error(Constant.ERROR_CODE,Constant.AESDNCODE_ERROR);
 		}
 		return nftService.batchBurn(batchBurnDo.getContractAddress(), realPrivateKey, batchBurnDo.getTokenIds());
 	}

@@ -1,10 +1,8 @@
 package inno.fiscobcos.be.controller;
 
 import inno.fiscobcos.be.entity.Wallet;
-import inno.fiscobcos.be.util.EncrypeUtils;
 import inno.fiscobcos.be.util.chain.ClientUtils;
 import inno.fiscobcos.be.util.result.Result;
-import inno.fiscobcos.be.util.result.ResultUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -37,7 +35,7 @@ public class WalletController {
     ){
         CryptoKeyPair account = clientUtils.createAccount("");
         Wallet wallet = new Wallet(account.getHexPrivateKey(),account.getHexPublicKey(),account.getAddress());
-        return ResultUtils.success(wallet);
+        return new Result().success(wallet);
     }
 
 

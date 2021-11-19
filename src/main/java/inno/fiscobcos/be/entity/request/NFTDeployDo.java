@@ -45,10 +45,10 @@ public class NFTDeployDo {
 	@ApiModelProperty(value = "是否支持核销" ,required= true)
 	private Boolean canWriteOff;
 
-	@ApiModelProperty(value = "核销类型（下标）及数量（元素值）(支持核销时必填)")
-	private List<@Min(1)BigInteger> writeOffQuantity;
+	@ApiModelProperty(value = "核销类型及数量(支持核销时必填)")
+	private List<InitWriteOffDo> initWriteOff;
 
-	@ApiModelProperty(value = "初始有效截至时间（不支持续费时必填）(公链秒时间戳，bcos毫秒时间戳)")
+	@ApiModelProperty(value = "初始有效截至时间(公链秒时间戳，bcos毫秒时间戳)",required= true)
 	private BigInteger initialDeadline;
 
 }

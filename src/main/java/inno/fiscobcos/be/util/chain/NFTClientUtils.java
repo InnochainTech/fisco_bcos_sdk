@@ -2,9 +2,10 @@ package inno.fiscobcos.be.util.chain;
 
 import inno.fiscobcos.be.constant.Config;
 import inno.fiscobcos.be.constant.Constant;
+import inno.fiscobcos.be.entity.request.InitWriteOffDo;
 import inno.fiscobcos.be.entity.response.*;
 import inno.fiscobcos.be.util.result.Result;
-import inno.fiscobcos.be.util.result.ResultUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.fisco.bcos.sdk.transaction.model.dto.CallResponse;
 import org.fisco.bcos.sdk.transaction.model.dto.TransactionResponse;
 import org.fisco.bcos.sdk.utils.StringUtils;
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -32,9 +33,9 @@ public class NFTClientUtils extends ClientUtils {
 
 	/* ---------  交易方法 -------------*/
 
-	public Result<NFTDeployVo> deploy(String orderId,String privateKey, String name, String symbol, BigInteger totalSupply, String equityLink, Boolean canRenew, Boolean canWriteOff){
+	public Result<NFTDeployVo> deploy(String orderId,String privateKey, String name, String symbol, BigInteger totalSupply, String equityLink, Boolean canRenew, Boolean canWriteOff, BigInteger initialDeadline){
 		TransactionResponse response;
-		String contractAddress = null;
+		String receiptMessage;
 		NFTDeployVo nftDeployVo = new NFTDeployVo();
 		List<Object> params = new ArrayList<>();
 		params.add(name);
@@ -43,31 +44,32 @@ public class NFTClientUtils extends ClientUtils {
 		params.add(equityLink);
 		params.add(canRenew);
 		params.add(canWriteOff);
+		params.add(initialDeadline);
 		try {
 			initAssembleTransactionProcessor(privateKey);
 			logger.info("orderId:{},state:{},functionName:{},params:{}",orderId,"ready","deploy",params);
 			response = transactionProcessor.deployByContractLoader(Constant.CONTRACT_NAME, params);
-			contractAddress = response.getContractAddress();
-			if(StringUtils.isEmpty(contractAddress)){
-				logger.info("orderId:{},state:{},functionName:{},tx:{}",orderId,"fail","deploy",response.getTransactionReceipt().getTransactionHash());
-				return ResultUtils.error(Constant.ERROR_CODE,response.getReceiptMessages());
-			}else{
-				logger.info("orderId:{},state:{},functionName:{},tx:{},contractAddress:{}",orderId,"success","deploy",response.getTransactionReceipt().getTransactionHash(),contractAddress);
-				nftDeployVo.setContractAddress(contractAddress);
+			receiptMessage = response.getReceiptMessages();
+			if(receiptMessage.equals(Constant.SUCCESS)){
+				logger.info("orderId:{},state:{},functionName:{},tx:{},contractAddress:{}",orderId,"success","deploy",response.getTransactionReceipt().getTransactionHash(),response.getContractAddress());
+				nftDeployVo.setContractAddress(response.getContractAddress());
 				nftDeployVo.setBlockNumber(conver16to10(response.getTransactionReceipt().getBlockNumber()));
 				nftDeployVo.setTransationHash(response.getTransactionReceipt().getTransactionHash());
-				return ResultUtils.success(nftDeployVo);
+				return new Result().success(nftDeployVo);
+			}else{
+				logger.info("orderId:{},state:{},functionName:{},tx:{}",orderId,"fail","deploy",response.getTransactionReceipt().getTransactionHash());
+				return new Result().error(Constant.ERROR_CODE,response.getReceiptMessages());
 			}
 		} catch (Exception exception) {
 			logger.error("orderId:{},functionName:{},info:{}",orderId,"deploy",exception.getMessage());
-			return ResultUtils.error(Constant.ERROR_CODE,exception.getMessage());
+			return new Result().error(Constant.ERROR_CODE,exception.getMessage());
 		}
 	}
 
 	public Result<BatchMintVo> batchMint(String orderId,String contractAddress, String privateKey, BigInteger supply, String tokenURI) {
 		TransactionResponse response;
-		List<BigInteger> tokenIds = null;
-		BatchMintVo BatchMintVo = new BatchMintVo();
+		List<BigInteger> tokenIds;
+		BatchMintVo batchMintVo = new BatchMintVo();
 		List<Object> params = new ArrayList<>();
 		params.add(supply);
 		params.add(tokenURI);
@@ -78,24 +80,19 @@ public class NFTClientUtils extends ClientUtils {
 			if(response.getReceiptMessages().equals(Constant.SUCCESS)){
 				List<Object> returnABIObjects = response.getReturnObject();
 				tokenIds = (List<BigInteger>) returnABIObjects.get(0);
-				Iterator<BigInteger> it = tokenIds.iterator();
-				while(it.hasNext()){
-					if(it.next().intValue() == 0){
-						it.remove();
-					}
-				}
-				BatchMintVo.setTokenIds(tokenIds);
-				BatchMintVo.setBlockNumber(conver16to10(response.getTransactionReceipt().getBlockNumber()));
-				BatchMintVo.setTransationHash(response.getTransactionReceipt().getTransactionHash());
+				tokenIds.removeIf(bigInteger -> bigInteger.intValue() == 0);
+				batchMintVo.setTokenIds(tokenIds);
+				batchMintVo.setBlockNumber(conver16to10(response.getTransactionReceipt().getBlockNumber()));
+				batchMintVo.setTransationHash(response.getTransactionReceipt().getTransactionHash());
 				logger.info("orderId:{},state:{},functionName:{},tx:{},result:{}",orderId,"success","batchMint",response.getTransactionReceipt().getTransactionHash(),tokenIds);
-				return ResultUtils.success(BatchMintVo);
+				return new Result().success(batchMintVo);
 			}else{
 				logger.info("orderId:{},state:{},functionName:{},tx:{}",orderId,"fail","batchMint",response.getTransactionReceipt().getTransactionHash());
-				return ResultUtils.error(Constant.ERROR_CODE,response.getReceiptMessages());
+				return new Result().error(Constant.ERROR_CODE,response.getReceiptMessages());
 			}
 		}catch (Exception exception){
 			logger.error("orderId:{},functionName:{},info:{}",orderId,"batchMint",exception.getMessage());
-			return ResultUtils.error(Constant.ERROR_CODE,exception.getMessage());
+			return new Result().error(Constant.ERROR_CODE,exception.getMessage());
 		}
 
 	}
@@ -119,15 +116,15 @@ public class NFTClientUtils extends ClientUtils {
 				batchSellVo.setBlockNumber(conver16to10(response.getTransactionReceipt().getBlockNumber()));
 				batchSellVo.setTransationHash(response.getTransactionReceipt().getTransactionHash());
 				logger.info("orderId:{},state:{},functionName:{},tx:{},result:{}",orderId,"success","batchSell",response.getTransactionReceipt().getTransactionHash(),result);
-				return ResultUtils.success(batchSellVo);
+				return new Result().success(batchSellVo);
 			}else{
 				logger.info("orderId:{},state:{},functionName:{},tx:{}",orderId,"fail","batchSell",response.getTransactionReceipt().getTransactionHash());
-				return ResultUtils.error(Constant.ERROR_CODE,response.getReceiptMessages());
+				return new Result().error(Constant.ERROR_CODE,response.getReceiptMessages());
 			}
 
 		}catch(Exception exception){
 			logger.error("orderId:{},functionName:{},info:{}",orderId,"batchSell",exception.getMessage());
-			return ResultUtils.error(Constant.ERROR_CODE,exception.getMessage());
+			return new Result().error(Constant.ERROR_CODE,exception.getMessage());
 		}
 
 	}
@@ -150,14 +147,14 @@ public class NFTClientUtils extends ClientUtils {
 				batchTransferVo.setBlockNumber(conver16to10(response.getTransactionReceipt().getBlockNumber()));
 				batchTransferVo.setTransationHash(response.getTransactionReceipt().getTransactionHash());
 				logger.info("orderId:{},state:{},functionName:{},result:{}",orderId,"success","batchTransfer",result);
-				return ResultUtils.success(batchTransferVo);
+				return new Result().success(batchTransferVo);
 			}else{
 				logger.info("orderId:{},state:{},functionName:{},tx:{}",orderId,"fail","batchTransfer",response.getTransactionReceipt().getTransactionHash());
-				return ResultUtils.error(Constant.ERROR_CODE,response.getReceiptMessages());
+				return new Result().error(Constant.ERROR_CODE,response.getReceiptMessages());
 			}
 		}catch(Exception exception){
 			logger.error("orderId:{},functionName:{},info:{}",orderId,"batchTransfer",exception.getMessage());
-			return ResultUtils.error(Constant.ERROR_CODE,exception.getMessage());
+			return new Result().error(Constant.ERROR_CODE,exception.getMessage());
 		}
 
 	}
@@ -179,14 +176,14 @@ public class NFTClientUtils extends ClientUtils {
 				renewVo.setBlockNumber(conver16to10(response.getTransactionReceipt().getBlockNumber()));
 				renewVo.setTransationHash(response.getTransactionReceipt().getTransactionHash());
 				logger.info("orderId:{},state:{},functionName:{},result:{}",orderId,"success","renew",result);
-				return ResultUtils.success(renewVo);
+				return new Result().success(renewVo);
 			}else{
 				logger.info("orderId:{},state:{},functionName:{},tx:{}",orderId,"fail","renew",response.getTransactionReceipt().getTransactionHash());
-				return ResultUtils.error(Constant.ERROR_CODE,response.getReceiptMessages());
+				return new Result().error(Constant.ERROR_CODE,response.getReceiptMessages());
 			}
 		}catch(Exception exception){
 			logger.error("orderId:{},functionName:{},info:{}",orderId,"renew",exception.getMessage());
-			return ResultUtils.error(Constant.ERROR_CODE,exception.getMessage());
+			return new Result().error(Constant.ERROR_CODE,exception.getMessage());
 		}
 	}
 
@@ -222,12 +219,12 @@ public class NFTClientUtils extends ClientUtils {
 
 	}*/
 
-	public Result<WriteOffVo> writeOff(String orderId,String contractAddress, String privateKey, BigInteger index, BigInteger tokenId, BigInteger supply)  {
+	public Result<WriteOffVo> writeOff(String orderId,String contractAddress, String privateKey, BigInteger type, BigInteger tokenId, BigInteger supply)  {
 		TransactionResponse response;
 		boolean result;
 		WriteOffVo writeOffVo = new WriteOffVo();
 		List<Object> params = new ArrayList<>();
-		params.add(index);
+		params.add(type);
 		params.add(tokenId);
 		params.add(supply);
 		try{
@@ -240,14 +237,14 @@ public class NFTClientUtils extends ClientUtils {
 				writeOffVo.setBlockNumber(conver16to10(response.getTransactionReceipt().getBlockNumber()));
 				writeOffVo.setTransationHash(response.getTransactionReceipt().getTransactionHash());
 				logger.info("orderId:{},state:{},functionName:{},result:{}",orderId,"success","writeOff",result);
-				return ResultUtils.success(writeOffVo);
+				return new Result().success(writeOffVo);
 			}else{
 				logger.info("orderId:{},state:{},functionName:{},tx:{}",orderId,"fail","writeOff",response.getTransactionReceipt().getTransactionHash());
-				return ResultUtils.error(Constant.ERROR_CODE,response.getReceiptMessages());
+				return new Result().error(Constant.ERROR_CODE,response.getReceiptMessages());
 			}
 		}catch(Exception exception){
 			logger.error("orderId:{},functionName:{},info:{}",orderId,"writeOff",exception.getMessage());
-			return ResultUtils.error(Constant.ERROR_CODE,exception.getMessage());
+			return new Result().error(Constant.ERROR_CODE,exception.getMessage());
 		}
 	}
 
@@ -267,22 +264,23 @@ public class NFTClientUtils extends ClientUtils {
 				batchBurnVo.setBlockNumber(conver16to10(response.getTransactionReceipt().getBlockNumber()));
 				batchBurnVo.setTransationHash(response.getTransactionReceipt().getTransactionHash());
 				logger.info("orderId:{},state:{},functionName:{},result:{}",orderId,"success","batchBurn",result);
-				return ResultUtils.success(batchBurnVo);
+				return new Result().success(batchBurnVo);
 			}else{
 				logger.info("orderId:{},state:{},functionName:{},tx:{}",orderId,"fail","batchBurn",response.getTransactionReceipt().getTransactionHash());
-				return ResultUtils.error(Constant.ERROR_CODE,response.getReceiptMessages());
+				return new Result().error(Constant.ERROR_CODE,response.getReceiptMessages());
 			}
 		}catch(Exception exception){
 			logger.error("orderId:{},functionName:{},info:{}",orderId,"batchBurn",exception.getMessage());
-			return ResultUtils.error(Constant.ERROR_CODE,exception.getMessage());
+			return new Result().error(Constant.ERROR_CODE,exception.getMessage());
 		}
 	}
 
-	public boolean setWriteOff(String orderId,String contractAddress, String privateKey, List<BigInteger> vipSupply)  {
+	public boolean setWriteOff(String orderId,String contractAddress, String privateKey, List<BigInteger> types,List<BigInteger> supply)  {
 		boolean result;
 		TransactionResponse response;
 		List<Object> params = new ArrayList<>();
-		params.add(vipSupply);
+		params.add(types);
+		params.add(supply);
 		try{
 			initAssembleTransactionProcessor(privateKey);
 			logger.info("orderId:{},state:{},functionName:{},params:{}",orderId,"ready","setWriteOff",params);
@@ -301,31 +299,32 @@ public class NFTClientUtils extends ClientUtils {
 		}
 	}
 
-	public boolean setInitialDeadline(String orderId,String contractAddress, String privateKey, BigInteger initialDeadline)  {
-		boolean result;
-		TransactionResponse response;
-		List<Object> params = new ArrayList<>();
-		params.add(initialDeadline);
-		try{
-			initAssembleTransactionProcessor(privateKey);
-			logger.info("orderId:{},state:{},functionName:{},params:{}",orderId,"ready","setInitialDeadline",params);
-			response = transactionProcessor.sendTransactionAndGetResponseByContractLoader(Constant.CONTRACT_NAME, contractAddress, "setInitialDeadline", params);
-			if(response.getReceiptMessages().equals(Constant.SUCCESS)){
-				result = response.getValues().equals(Constant.TRUE);
-				logger.info("orderId:{},state:{},functionName:{},result:{}",orderId,"success","setInitialDeadline",result);
-				return result;
-			}else{
-				logger.info("orderId:{},state:{},functionName:{},tx:{}",orderId,"fail","batchBurn",response.getTransactionReceipt().getTransactionHash());
-				return false;
-			}
-		}catch(Exception exception){
-			logger.error("orderId:{},functionName:{},info:{}",orderId,"setInitialDeadline",exception.getMessage());
-			return false;
-		}
-
-	}
+//	public boolean setInitialDeadline(String orderId,String contractAddress, String privateKey, BigInteger initialDeadline)  {
+//		boolean result;
+//		TransactionResponse response;
+//		List<Object> params = new ArrayList<>();
+//		params.add(initialDeadline);
+//		try{
+//			initAssembleTransactionProcessor(privateKey);
+//			logger.info("orderId:{},state:{},functionName:{},params:{}",orderId,"ready","setInitialDeadline",params);
+//			response = transactionProcessor.sendTransactionAndGetResponseByContractLoader(Constant.CONTRACT_NAME, contractAddress, "setInitialDeadline", params);
+//			if(response.getReceiptMessages().equals(Constant.SUCCESS)){
+//				result = response.getValues().equals(Constant.TRUE);
+//				logger.info("orderId:{},state:{},functionName:{},result:{}",orderId,"success","setInitialDeadline",result);
+//				return result;
+//			}else{
+//				logger.info("orderId:{},state:{},functionName:{},tx:{}",orderId,"fail","batchBurn",response.getTransactionReceipt().getTransactionHash());
+//				return false;
+//			}
+//		}catch(Exception exception){
+//			logger.error("orderId:{},functionName:{},info:{}",orderId,"setInitialDeadline",exception.getMessage());
+//			return false;
+//		}
+//
+//	}
 
 	/* ---------  查询方法 -------------*/
+
 	public boolean getOverTime(String contractAddress,BigInteger tokenId)  throws Exception{
 		boolean result = false;
 		List<Object> params = new ArrayList<>();
@@ -333,11 +332,7 @@ public class NFTClientUtils extends ClientUtils {
 		initAssembleTransactionProcessor("");
 		CallResponse callResponse = transactionProcessor.sendCallByContractLoader(Constant.CONTRACT_NAME, contractAddress, "getOverTime", params);
 		if(callResponse.getReturnMessage().equals(Constant.SUCCESS)){
-			if(callResponse.getValues().equals(Constant.TRUE)){
-				result = true;
-			}else{
-				result = false;
-			}
+			result = callResponse.getValues().equals(Constant.TRUE);
 		}
 		return result;
 	}
@@ -372,11 +367,7 @@ public class NFTClientUtils extends ClientUtils {
 		initAssembleTransactionProcessor("");
 		CallResponse callResponse = transactionProcessor.sendCallByContractLoader(Constant.CONTRACT_NAME, contractAddress, "getCanRenew", params);
 		if(callResponse.getReturnMessage().equals(Constant.SUCCESS)){
-			if(callResponse.getValues().equals(Constant.TRUE)){
-				result = true;
-			}else{
-				result = false;
-			}
+			result = callResponse.getValues().equals(Constant.TRUE);
 		}
 
 		return result;
@@ -388,11 +379,7 @@ public class NFTClientUtils extends ClientUtils {
 		initAssembleTransactionProcessor("");
 		CallResponse callResponse = transactionProcessor.sendCallByContractLoader(Constant.CONTRACT_NAME, contractAddress, "getCanWriteOff", params);
 		if(callResponse.getReturnMessage().equals(Constant.SUCCESS)){
-			if(callResponse.getValues().equals(Constant.TRUE)){
-				result = true;
-			}else{
-				result = false;
-			}
+			result = callResponse.getValues().equals(Constant.TRUE);
 		}
 
 		return result;
@@ -421,34 +408,36 @@ public class NFTClientUtils extends ClientUtils {
 		return result;
 	}
 
-	public List<BigInteger> getVipSupply(String contractAddress) throws Exception{
-		List<BigInteger> result = new ArrayList<>();
+	public List<InitWriteOffDo> getVipSupply(String contractAddress) throws Exception{
+		List<InitWriteOffDo> result = new ArrayList<>();
 		List<Object> params = new ArrayList<>();
 		initAssembleTransactionProcessor("");
 		CallResponse callResponse = transactionProcessor.sendCallByContractLoader(Constant.CONTRACT_NAME, contractAddress, "getVipSupply", params);
 		if(callResponse.getReturnMessage().equals(Constant.SUCCESS)){
-			String[] arr = conver(callResponse.getValues()).split(",");
-			for (int i = 0; i <arr.length; i++){
-				if(!StringUtils.isEmpty(arr[i])) {
-					result.add(new BigInteger(arr[i]));
-				}
+			List<Object> returnObject = callResponse.getReturnObject();
+			String[] typesStr = conver(returnObject.get(0).toString()).split(",");
+			String[] supplyStr = conver(returnObject.get(1).toString()).split(",");
+			for(int i = 0; i < typesStr.length; i++){
+				InitWriteOffDo initWriteOffDo = new InitWriteOffDo(new BigInteger(typesStr[i].replaceAll(" ","") ),new BigInteger(supplyStr[i].replaceAll(" ","") ));
+				result.add(initWriteOffDo);
 			}
 		}
 		return result;
 	}
 
-	public List<BigInteger> getTokenVipSupply(String contractAddress, BigInteger tokenId) throws Exception{
-		List<BigInteger> result = new ArrayList<>();
+	public List<InitWriteOffDo> getTokenVipSupply(String contractAddress, BigInteger tokenId) throws Exception{
+		List<InitWriteOffDo> result = new ArrayList<>();
 		List<Object> params = new ArrayList<>();
 		params.add(tokenId);
 		initAssembleTransactionProcessor("");
 		CallResponse callResponse = transactionProcessor.sendCallByContractLoader(Constant.CONTRACT_NAME, contractAddress, "getTokenVipSupply", params);
 		if(callResponse.getReturnMessage().equals(Constant.SUCCESS)){
-			String[] arr = conver(callResponse.getValues()).split(",");
-			for (int i = 0; i <arr.length; i++){
-				if(!StringUtils.isEmpty(arr[i])){
-					result.add(new BigInteger(arr[i]));
-				}
+			List<Object> returnObject = callResponse.getReturnObject();
+			String[] typesStr = conver(returnObject.get(0).toString()).split(",");
+			String[] supplyStr = conver(returnObject.get(1).toString()).split(",");
+			for(int i = 0; i < typesStr.length; i++){
+				InitWriteOffDo initWriteOffDo = new InitWriteOffDo(new BigInteger(typesStr[i].replaceAll(" ","") ),new BigInteger(supplyStr[i].replaceAll(" ","") ));
+				result.add(initWriteOffDo);
 			}
 		}
 
@@ -486,9 +475,9 @@ public class NFTClientUtils extends ClientUtils {
 		CallResponse callResponse = transactionProcessor.sendCallByContractLoader(Constant.CONTRACT_NAME, contractAddress, "getTokens", params);
 		if(callResponse.getReturnMessage().equals(Constant.SUCCESS)){
 			String[] arr = conver(callResponse.getValues()).split(",");
-			for (int i = 0; i <arr.length; i++){
-				if(!StringUtils.isEmpty(arr[i])) {
-					result.add(new BigInteger(arr[i]));
+			for (String s : arr) {
+				if (!StringUtils.isEmpty(s)) {
+					result.add(new BigInteger(s));
 				}
 			}
 		}
@@ -498,8 +487,6 @@ public class NFTClientUtils extends ClientUtils {
 
 	/**
 	 * 初始TransactionProcessor
-	 * @param privateKey
-	 * @throws Exception
 	 */
 	private void initAssembleTransactionProcessor(String privateKey) throws Exception {
 		transactionProcessor = getAssembleTransactionProcessor(privateKey, config.abiFilePath, config.binFilePath);

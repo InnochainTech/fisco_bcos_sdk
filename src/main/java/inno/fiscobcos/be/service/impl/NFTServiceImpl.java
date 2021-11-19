@@ -1,6 +1,7 @@
 package inno.fiscobcos.be.service.impl;
 
 import inno.fiscobcos.be.entity.ResponseVo;
+import inno.fiscobcos.be.entity.request.InitWriteOffDo;
 import inno.fiscobcos.be.entity.response.*;
 import inno.fiscobcos.be.service.NFTService;
 import inno.fiscobcos.be.util.chain.NFTClientUtils;
@@ -22,16 +23,12 @@ public class NFTServiceImpl implements NFTService {
 	NFTClientUtils nftClientUtils;
 
 	@Override
-	public Result<NFTDeployVo> deploy(String privateKey, String name, String symbol, BigInteger totalSupply, String equityLink, Boolean canRenew, Boolean canWriteOff, List<BigInteger> WriteOffQuantity, BigInteger initialDeadline) {
+	public Result<NFTDeployVo> deploy(String privateKey, String name, String symbol, BigInteger totalSupply, String equityLink, Boolean canRenew, Boolean canWriteOff, List<BigInteger> types,List<BigInteger> supply, BigInteger initialDeadline) {
 		String orderId = System.currentTimeMillis()+"";
-		Result<NFTDeployVo> result = nftClientUtils.deploy(orderId,privateKey,name,symbol,totalSupply,equityLink,canRenew,canWriteOff);
-		if(!canRenew){
-			//设置初始有效截至时间
-			result.getData().setSetInitialDeadlineSuccess(nftClientUtils.setInitialDeadline(orderId,result.getData().getContractAddress(),privateKey,initialDeadline));
-		}
-		if(canWriteOff){
+		Result<NFTDeployVo> result = nftClientUtils.deploy(orderId,privateKey,name,symbol,totalSupply,equityLink,canRenew,canWriteOff,initialDeadline);
+		if(result.getCode() == 200 && canWriteOff){
 			//设置核销参数
-			result.getData().setSetWriteOffSuccess(nftClientUtils.setWriteOff(orderId,result.getData().getContractAddress(),privateKey,WriteOffQuantity));
+			result.getData().setSetWriteOffSuccess(nftClientUtils.setWriteOff(orderId,result.getData().getContractAddress(),privateKey,types,supply));
 		}
 		return result;
 	}
@@ -113,12 +110,12 @@ public class NFTServiceImpl implements NFTService {
 	}
 
 	@Override
-	public List<BigInteger> getVipSupply(String contractAddress) throws Exception {
+	public List<InitWriteOffDo> getVipSupply(String contractAddress) throws Exception {
 		return nftClientUtils.getVipSupply(contractAddress);
 	}
 
 	@Override
-	public List<BigInteger> getTokenVipSupply(String contractAddress, BigInteger tokenId) throws Exception {
+	public List<InitWriteOffDo> getTokenVipSupply(String contractAddress, BigInteger tokenId) throws Exception {
 		return nftClientUtils.getTokenVipSupply(contractAddress,tokenId);
 	}
 

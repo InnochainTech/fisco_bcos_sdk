@@ -1,7 +1,7 @@
 package inno.fiscobcos.be.configuration;
 
 import inno.fiscobcos.be.util.result.Result;
-import inno.fiscobcos.be.util.result.ResultUtils;
+import org.fisco.bcos.sdk.transaction.model.exception.TransactionBaseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -33,7 +33,7 @@ public class GlobalExceptionHandler  {
     @ResponseBody
     public Result exceptionHandler(HttpServletRequest req, NullPointerException e){
         logger.error("发生空指针异常！原因是:",e);
-        return ResultUtils.error(300,"发生空指针异常！原因是:"+e.getMessage());
+        return new Result().error(300,"发生空指针异常！原因是:"+e.getMessage());
     }
 
     /**
@@ -46,7 +46,7 @@ public class GlobalExceptionHandler  {
     @ResponseBody
     public Result exceptionHandler(HttpServletRequest req, MethodArgumentNotValidException e){
         logger.error("方法参数异常！原因是:",e);
-        return ResultUtils.error(300,"输入参数异常！原因是:"+e.getBindingResult().getAllErrors().get(0).getDefaultMessage());
+        return new Result().error(300,"输入参数异常！原因是:"+e.getBindingResult().getAllErrors().get(0).getDefaultMessage());
     }
 
     /**
@@ -59,7 +59,20 @@ public class GlobalExceptionHandler  {
     @ResponseBody
     public Result exceptionHandler(HttpServletRequest req, HttpMessageNotReadableException e) throws IOException {
         logger.error("请求传递的参数不可读！原因是:",e);
-        return ResultUtils.error(300,"请求传递的参数不可读！:"+e.getMessage());
+        return new Result().error(300,"请求传递的参数不可读！:"+e.getMessage());
+    }
+
+    /**
+     * 合约参数格式异常
+     * @param req
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(value = TransactionBaseException.class)
+    @ResponseBody
+    public Result exceptionHandler(HttpServletRequest req, TransactionBaseException e) throws IOException {
+        logger.error("发起交易参数错误！原因是:",e);
+        return new Result().error(300,"发起交易参数错误！:"+e.getMessage());
     }
 
     /**
@@ -72,6 +85,6 @@ public class GlobalExceptionHandler  {
     @ResponseBody
     public Result exceptionHandler(HttpServletRequest req, Exception e){
         logger.error("未知异常！原因是:",e);
-        return ResultUtils.error(300,"未知异常！原因是:"+e.getMessage());
+        return new Result().error(300,"未知异常！原因是:"+e.getMessage());
     }
 }

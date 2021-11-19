@@ -1,10 +1,17 @@
 package inno.fiscobcos.be.util.result;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 /**
- * @Description: TODO(这里用一句话描述这个类的作用)
+ * @Description: 请求返回结果
  * @Author peifeng
  * @Date 2021/5/24 15:46
  */
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Result<T>{
     /** 错误码. */
     private Integer code;
@@ -15,27 +22,18 @@ public class Result<T>{
     /** 具体的内容. */
     private T data;
 
-    public Integer getCode() {
-        return code;
+    public Result success(T object) {
+        return new Result(200,"成功",object);
     }
 
-    public void setCode(Integer code) {
-        this.code = code;
+    public Result success() {
+        return success(null);
     }
 
-    public String getMsg() {
-        return msg;
-    }
-
-    public void setMsg(String msg) {
-        this.msg = msg;
-    }
-
-    public T getData() {
-        return data;
-    }
-
-    public void setData(T data) {
-        this.data = data;
+    public Result error(Integer code, String msg) {
+        Result result = new Result();
+        result.setCode(code);
+        result.setMsg(msg);
+        return result;
     }
 }

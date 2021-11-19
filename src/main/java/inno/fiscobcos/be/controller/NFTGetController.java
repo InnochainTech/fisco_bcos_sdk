@@ -1,13 +1,7 @@
 package inno.fiscobcos.be.controller;
 
-import inno.fiscobcos.be.constant.Config;
-import inno.fiscobcos.be.constant.Constant;
-import inno.fiscobcos.be.entity.request.*;
-import inno.fiscobcos.be.entity.response.*;
 import inno.fiscobcos.be.service.NFTService;
-import inno.fiscobcos.be.util.EncrypeUtils;
 import inno.fiscobcos.be.util.result.Result;
-import inno.fiscobcos.be.util.result.ResultUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -40,7 +34,7 @@ public class NFTGetController {
 							  @ApiParam(name="tokenId",value="tokenId",required = true)
 							  @RequestParam(value = "tokenId", required = true) BigInteger tokenId
 	) throws Exception{
-		return ResultUtils.success(nftService.getOverTime(contractAddress,tokenId));
+		return new Result().success(nftService.getOverTime(contractAddress,tokenId));
 	}
 
 	@ApiOperation(value = "查看NFT到期时间")
@@ -53,7 +47,7 @@ public class NFTGetController {
 									@RequestParam(value = "tokenId", required = true)
 									@Min(1)BigInteger tokenId
 	) throws Exception{
-		return ResultUtils.success(nftService.getExpirationTime(contractAddress,tokenId));
+		return new Result().success(nftService.getExpirationTime(contractAddress,tokenId));
 	}
 
 	@ApiOperation(value = "查看NFT允许铸造的最大数量")
@@ -63,7 +57,7 @@ public class NFTGetController {
 								 @RequestParam(value = "contractAddress", required = true)
 								 @Pattern(regexp = "^0[xX][0-9a-fA-F]{40}$", message = "合约地址格式错误") String contractAddress
 	) throws Exception{
-		return ResultUtils.success(nftService.getTotalSupply(contractAddress));
+		return new Result().success(nftService.getTotalSupply(contractAddress));
 	}
 
 	@ApiOperation(value = "查看NFT是否允许续期")
@@ -73,7 +67,7 @@ public class NFTGetController {
 							  @RequestParam(value = "contractAddress", required = true)
 							  @Pattern(regexp = "^0[xX][0-9a-fA-F]{40}$", message = "合约地址格式错误") String contractAddress
 	) throws Exception{
-		return ResultUtils.success(nftService.getCanRenew(contractAddress));
+		return new Result().success(nftService.getCanRenew(contractAddress));
 	}
 
 	@ApiOperation(value = "查看NFT是否允许核销")
@@ -83,7 +77,7 @@ public class NFTGetController {
 								 @RequestParam(value = "contractAddress", required = true)
 								 @Pattern(regexp = "^0[xX][0-9a-fA-F]{40}$", message = "合约地址格式错误") String contractAddress
 	) throws Exception{
-		return ResultUtils.success(nftService.getCanWriteOff(contractAddress));
+		return new Result().success(nftService.getCanWriteOff(contractAddress));
 	}
 
 	@ApiOperation(value = "查看NFT权益链接")
@@ -93,7 +87,7 @@ public class NFTGetController {
 								@RequestParam(value = "contractAddress", required = true)
 								@Pattern(regexp = "^0[xX][0-9a-fA-F]{40}$", message = "合约地址格式错误") String contractAddress
 	) throws Exception{
-		return ResultUtils.success(nftService.getEquityLink(contractAddress));
+		return new Result().success(nftService.getEquityLink(contractAddress));
 	}
 
 	@ApiOperation(value = "查看NFT已经铸造的数量")
@@ -103,7 +97,7 @@ public class NFTGetController {
 								 @RequestParam(value = "contractAddress", required = true)
 								 @Pattern(regexp = "^0[xX][0-9a-fA-F]{40}$", message = "合约地址格式错误") String contractAddress
 	) throws Exception{
-		return ResultUtils.success(nftService.getTokenMinted(contractAddress));
+		return new Result().success(nftService.getTokenMinted(contractAddress));
 	}
 
 
@@ -114,7 +108,7 @@ public class NFTGetController {
 							   @RequestParam(value = "contractAddress", required = true)
 							   @Pattern(regexp = "^0[xX][0-9a-fA-F]{40}$", message = "合约地址格式错误") String contractAddress
 	) throws Exception{
-		return ResultUtils.success(nftService.getVipSupply(contractAddress));
+		return new Result().success(nftService.getVipSupply(contractAddress));
 	}
 
 	@ApiOperation(value = "查看NFT还剩余未核销的会员数量")
@@ -127,7 +121,7 @@ public class NFTGetController {
 									@RequestParam(value = "tokenId", required = true)
 									@Min(1)BigInteger tokenId
 	) throws Exception{
-		return ResultUtils.success(nftService.getTokenVipSupply(contractAddress,tokenId));
+		return new Result().success(nftService.getTokenVipSupply(contractAddress,tokenId));
 	}
 
 
@@ -138,7 +132,7 @@ public class NFTGetController {
 						 @RequestParam(value = "contractAddress", required = true)
 						 @Pattern(regexp = "^0[xX][0-9a-fA-F]{40}$", message = "合约地址格式错误") String contractAddress
 	) throws Exception{
-		return ResultUtils.success(nftService.getNow(contractAddress));
+		return new Result().success(nftService.getNow(contractAddress));
 	}
 
 	@ApiOperation(value = "查看合约名称")
@@ -148,7 +142,7 @@ public class NFTGetController {
 						 @RequestParam(value = "contractAddress", required = true)
 						 @Pattern(regexp = "^0[xX][0-9a-fA-F]{40}$", message = "合约地址格式错误") String contractAddress
 	) throws Exception{
-		return ResultUtils.success(nftService.getName(contractAddress));
+		return new Result().success(nftService.getName(contractAddress));
 	}
 
 	@ApiOperation(value = "查看地址拥有的资产数")
@@ -161,7 +155,7 @@ public class NFTGetController {
 									@RequestParam(value = "accountAddress", required = true)
 									@Pattern(regexp = "^0[xX][0-9a-fA-F]{40}$", message = "查询地址格式错误") String accountAddress
 	) throws Exception{
-		return ResultUtils.success(nftService.getTokens(contractAddress,accountAddress));
+		return new Result().success(nftService.getTokens(contractAddress,accountAddress));
 	}
 
 
