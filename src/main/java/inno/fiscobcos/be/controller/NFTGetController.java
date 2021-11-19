@@ -141,5 +141,28 @@ public class NFTGetController {
 		return ResultUtils.success(nftService.getNow(contractAddress));
 	}
 
+	@ApiOperation(value = "查看合约名称")
+	@ResponseBody
+	@GetMapping("/getName")
+	public Result getName(@ApiParam(name="contractAddress",value="合约地址",required = true)
+						 @RequestParam(value = "contractAddress", required = true)
+						 @Pattern(regexp = "^0[xX][0-9a-fA-F]{40}$", message = "合约地址格式错误") String contractAddress
+	) throws Exception{
+		return ResultUtils.success(nftService.getName(contractAddress));
+	}
+
+	@ApiOperation(value = "查看地址拥有的资产数")
+	@ResponseBody
+	@GetMapping("/getTokens")
+	public Result getTokens(@ApiParam(name="contractAddress",value="合约地址",required = true)
+									@RequestParam(value = "contractAddress", required = true)
+									@Pattern(regexp = "^0[xX][0-9a-fA-F]{40}$", message = "合约地址格式错误") String contractAddress,
+									@ApiParam(name="tokenId",value="tokenId",required = true)
+									@RequestParam(value = "tokenId", required = true)
+									@Min(1)BigInteger tokenId
+	) throws Exception{
+		return ResultUtils.success(nftService.getTokens(contractAddress,tokenId));
+	}
+
 
 }

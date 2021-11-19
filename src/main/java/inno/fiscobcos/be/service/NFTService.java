@@ -124,4 +124,8 @@ public interface NFTService {
 	List<BigInteger> getTokenVipSupply(String contractAddress, BigInteger tokenId)throws Exception;
 
 	BigInteger getNow(String contractAddress)throws Exception;
+
+	String getName(String contractAddress)throws Exception;
+
+	List<BigInteger> getTokens(String contractAddress, BigInteger tokenId) throws Exception;
 }

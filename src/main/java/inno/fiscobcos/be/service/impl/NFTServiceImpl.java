@@ -97,7 +97,7 @@ public class NFTServiceImpl implements NFTService {
 
 	@Override
 	public String getEquityLink(String contractAddress) throws Exception {
-		return nftClientUtils.getName(contractAddress);
+		return nftClientUtils.getEquityLink(contractAddress);
 	}
 
 	@Override
@@ -118,6 +118,16 @@ public class NFTServiceImpl implements NFTService {
 	@Override
 	public BigInteger getNow(String contractAddress) throws Exception {
 		return nftClientUtils.getNow(contractAddress);
+	}
+
+	@Override
+	public String getName(String contractAddress) throws Exception {
+		return nftClientUtils.getName(contractAddress);
+	}
+
+	@Override
+	public List<BigInteger> getTokens(String contractAddress, BigInteger tokenId) throws Exception {
+		return nftClientUtils.getTokens(contractAddress,tokenId);
 	}
 
 

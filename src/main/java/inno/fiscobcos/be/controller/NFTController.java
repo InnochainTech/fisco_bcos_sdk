@@ -2,7 +2,6 @@ package inno.fiscobcos.be.controller;
 
 import inno.fiscobcos.be.constant.Config;
 import inno.fiscobcos.be.constant.Constant;
-import inno.fiscobcos.be.entity.ResponseVo;
 import inno.fiscobcos.be.entity.request.*;
 import inno.fiscobcos.be.entity.response.*;
 import inno.fiscobcos.be.service.NFTService;
@@ -11,12 +10,13 @@ import inno.fiscobcos.be.util.result.Result;
 import inno.fiscobcos.be.util.result.ResultUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigInteger;
+import javax.validation.Valid;
+
 
 /**
  * @author peifeng
@@ -24,6 +24,7 @@ import java.math.BigInteger;
  */
 @Api(tags = "NFT合约")
 @Controller
+@Validated
 @RequestMapping(value = "/nft")
 public class NFTController {
 
@@ -36,7 +37,7 @@ public class NFTController {
 	@ApiOperation(value = "部署合约")
 	@ResponseBody
 	@PostMapping("/deploy")
-	public Result<NFTDeployVo> deploy(@RequestBody NFTDeployDo nftDeploy){
+	public Result<NFTDeployVo> deploy(@Validated @RequestBody NFTDeployDo nftDeploy){
 		String realPrivateKey;
 		try{
 			realPrivateKey = EncrypeUtils.AESDncode(config.encrypeKey,nftDeploy.getPrivateKey());
@@ -44,14 +45,12 @@ public class NFTController {
 			return ResultUtils.error(Constant.ERROR_CODE,Constant.AESDNCODE_ERROR);
 		}
 		return nftService.deploy(realPrivateKey,nftDeploy.getName(),nftDeploy.getSymbol(),nftDeploy.getTotalSupply(),nftDeploy.getEquityLink(),nftDeploy.getCanRenew(),nftDeploy.getCanWriteOff(),nftDeploy.getWriteOffQuantity(),nftDeploy.getInitialDeadline());
-
-
 	}
 
 	@ApiOperation(value = "批量铸造")
 	@ResponseBody
 	@PostMapping("/batchMint")
-	public Result<BatchMintVo> batchMint(@RequestBody BatchMintDo batchMintDo) {
+	public Result<BatchMintVo> batchMint(@Validated @RequestBody BatchMintDo batchMintDo) {
 		String realPrivateKey;
 		try{
 			realPrivateKey = EncrypeUtils.AESDncode(config.encrypeKey,batchMintDo.getPrivateKey());
@@ -64,7 +63,7 @@ public class NFTController {
 	@ApiOperation(value = "批量出售")
 	@ResponseBody
 	@PostMapping("/batchSell")
-	public Result<BatchSellVo> batchSell(@RequestBody BatchSellDo batchSellDo) {
+	public Result<BatchSellVo> batchSell(@Validated @RequestBody BatchSellDo batchSellDo) {
 		String realPrivateKey;
 		try{
 			realPrivateKey = EncrypeUtils.AESDncode(config.encrypeKey,batchSellDo.getPrivateKey());
@@ -77,7 +76,7 @@ public class NFTController {
 	@ApiOperation(value = "批量转账")
 	@ResponseBody
 	@PostMapping("/batchTransfer")
-	public Result<BatchTransferVo> batchSell(@RequestBody BatchTransferDo batchTransferDo) {
+	public Result<BatchTransferVo> batchSell(@Validated @RequestBody BatchTransferDo batchTransferDo) {
 		String realPrivateKey;
 		try{
 			realPrivateKey = EncrypeUtils.AESDncode(config.encrypeKey,batchTransferDo.getPrivateKey());
@@ -91,7 +90,7 @@ public class NFTController {
 	@ApiOperation(value = "续费")
 	@ResponseBody
 	@PostMapping("/renew")
-	public Result<RenewVo> renew(@RequestBody RenewDo renewDo) {
+	public Result<RenewVo> renew(@Validated @RequestBody RenewDo renewDo) {
 		String realPrivateKey;
 		try{
 			realPrivateKey = EncrypeUtils.AESDncode(config.encrypeKey,renewDo.getPrivateKey());
@@ -111,7 +110,7 @@ public class NFTController {
 	@ApiOperation(value = "核销")
 	@ResponseBody
 	@PostMapping("/writeOff")
-	public Result<WriteOffVo> writeOff(@RequestBody WriteOffDo writeOffDo) {
+	public Result<WriteOffVo> writeOff(@RequestBody @Valid WriteOffDo writeOffDo) {
 		String realPrivateKey;
 		try{
 			realPrivateKey = EncrypeUtils.AESDncode(config.encrypeKey,writeOffDo.getPrivateKey());
@@ -124,7 +123,7 @@ public class NFTController {
 	@ApiOperation(value = "批量销毁")
 	@ResponseBody
 	@PostMapping("/batchBurn")
-	public Result<BatchBurnVo> batchBurn(@RequestBody BatchBurnDo batchBurnDo) {
+	public Result<BatchBurnVo> batchBurn(@Validated @RequestBody BatchBurnDo batchBurnDo) {
 		String realPrivateKey;
 		try{
 			realPrivateKey = EncrypeUtils.AESDncode(config.encrypeKey,batchBurnDo.getPrivateKey());

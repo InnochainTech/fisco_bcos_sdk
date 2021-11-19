@@ -20,6 +20,6 @@ public class RequestDo {
 
 	@ApiModelProperty(value = "合约地址" ,required= true)
 	@Pattern(regexp = "^0[xX][0-9a-fA-F]{40}$", message = "合约地址格式错误")
-	protected String contractAddress;
+	private String contractAddress;
 
 }

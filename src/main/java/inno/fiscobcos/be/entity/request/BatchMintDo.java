@@ -6,8 +6,11 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.Pattern;
 import java.math.BigInteger;
 
 /**
@@ -23,6 +26,7 @@ public class BatchMintDo extends RequestDo {
 	@ApiModelProperty(value = "合约管理员私钥（加密后的私钥）" ,required= true)
 	private String privateKey;
 
+	@Valid
 	@ApiModelProperty(value = "铸造数量" ,required= true)
 	@Min(1)
 	private BigInteger supply;

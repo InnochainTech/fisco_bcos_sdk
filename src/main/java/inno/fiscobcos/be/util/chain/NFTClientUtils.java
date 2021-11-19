@@ -470,11 +470,27 @@ public class NFTClientUtils extends ClientUtils {
 		String result = "";
 		List<Object> params = new ArrayList<>();
 		initAssembleTransactionProcessor("");
-		CallResponse callResponse = transactionProcessor.sendCallByContractLoader(Constant.CONTRACT_NAME, "0x5e9de807a6c1d43d8e47d06c42d301234cf310e1", "name", params);
+		CallResponse callResponse = transactionProcessor.sendCallByContractLoader(Constant.CONTRACT_NAME, contractAddress, "name", params);
 		if(callResponse.getReturnMessage().equals(Constant.SUCCESS)){
 			result = conver(callResponse.getValues());
 		}
 
+		return result;
+	}
+
+	public List<BigInteger> getTokens(String contractAddress, BigInteger tokenId) throws Exception {
+		List<BigInteger> result = new ArrayList<>();
+		List<Object> params = new ArrayList<>();
+		initAssembleTransactionProcessor("");
+		CallResponse callResponse = transactionProcessor.sendCallByContractLoader(Constant.CONTRACT_NAME, contractAddress, "getTokens", params);
+		if(callResponse.getReturnMessage().equals(Constant.SUCCESS)){
+			String[] arr = conver(callResponse.getValues()).split(",");
+			for (int i = 0; i <arr.length; i++){
+				if(!StringUtils.isEmpty(arr[i])) {
+					result.add(new BigInteger(arr[i]));
+				}
+			}
+		}
 		return result;
 	}
 
@@ -487,10 +503,6 @@ public class NFTClientUtils extends ClientUtils {
 	private void initAssembleTransactionProcessor(String privateKey) throws Exception {
 		transactionProcessor = getAssembleTransactionProcessor(privateKey, config.abiFilePath, config.binFilePath);
 	}
-
-
-
-
 
 
 
