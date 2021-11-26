@@ -11,6 +11,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,6 +53,9 @@ public class NFTController {
 			types.add(initWriteOffDo.getType());
 			supply.add(initWriteOffDo.getSupply());
 		}
+		if(StringUtils.isEmpty(nftDeploy.getEquityLink())){
+			nftDeploy.setEquityLink("");
+		}
 		return nftService.deploy(realPrivateKey,nftDeploy.getName(),nftDeploy.getSymbol(),nftDeploy.getTotalSupply(),nftDeploy.getEquityLink(),nftDeploy.getCanRenew(),nftDeploy.getCanWriteOff(),types,supply,nftDeploy.getInitialDeadline());
 	}
 
@@ -77,6 +81,9 @@ public class NFTController {
 			realPrivateKey = EncrypeUtils.AESDncode(config.encrypeKey,batchSellDo.getPrivateKey());
 		} catch (Exception exception) {
 			return new Result().error(Constant.ERROR_CODE,Constant.AESDNCODE_ERROR);
+		}
+		if(StringUtils.isEmpty(batchSellDo.getExpirationTime())){
+			batchSellDo.setExpirationTime(new BigInteger("0"));
 		}
 		return nftService.batchSell(batchSellDo.getContractAddress(),realPrivateKey,batchSellDo.getTokenIds(),batchSellDo.getTo(),batchSellDo.getExpirationTime());
 	}
