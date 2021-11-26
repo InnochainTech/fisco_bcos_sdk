@@ -33,6 +33,13 @@ public class WalletController {
     public Result<Wallet> createWallet(@ApiParam(name="accountId",value="不能使用特殊符号",required = true)
                                        @RequestParam(value = "accountId", required = true) @Pattern(regexp = "^[a-z0-9A-Z]+$", message = "参数类型错误") String accountId
     ){
+        // OkHttps.async()
+        //         .tag()
+        //         .bind()
+        //         .setOnResponse(res ->{
+        //             //TODO: 回调响应
+        //         })
+        //         .get();
         CryptoKeyPair account = clientUtils.createAccount("");
         Wallet wallet = new Wallet(account.getHexPrivateKey(),account.getHexPublicKey(),account.getAddress());
         return new Result().success(wallet);

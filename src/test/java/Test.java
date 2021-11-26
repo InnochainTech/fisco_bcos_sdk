@@ -1,4 +1,4 @@
-import java.util.regex.Pattern;
+import com.ejlchina.okhttps.OkHttps;
 
 /**
  * @author peifeng
@@ -11,5 +11,12 @@ public class Test {
 		for (int i = 1; i <=200 ; i++){
 			System.out.print(i+",");
 		}
+	}
+
+	@org.junit.Test
+	public  void test(){
+		String result = OkHttps.sync("/version") // http://api.example.com/users
+				.get().getBody().toString();
+		System.out.println(result);
 	}
 }

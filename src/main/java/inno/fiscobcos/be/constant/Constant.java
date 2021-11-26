@@ -17,4 +17,7 @@ public class Constant {
 
 	public static final String SPRING_PROFILES_ACTIVE_DEV = "dev";
 
+	public static final String WEBASESIGN_URL = "http://120.76.242.17:5004/WeBASE-Sign";
+
+	public static final String WEBASETRANSACTION_URL = "http://120.76.242.17:5003/WeBASE-Transaction";
 }
