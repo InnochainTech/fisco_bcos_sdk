@@ -11,7 +11,7 @@ spring:
     username: root
     password: 123qwe
     type: com.alibaba.druid.pool.DruidDataSource
-    url: jdbc:mysql://localhost:3306/pdf-opensea?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT
+    url: jdbc:mysql://localhost:3306/xxx?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT
 
 #rocketMQ
 rocketmq:
@@ -34,9 +34,12 @@ rocketmq:
 #rocketmq.producer.group = chain-producer-group
 
 filePath:
-  abi: /home/wanbowen/fisco_bcos_sdk/src/main/resources/contract/abi/
-  bin: /home/wanbowen/fisco_bcos_sdk/src/main/resources/contract/bin/
+  abi: contract/abi/
+  bin: contract/bin/
 
 bcos:
   config: classpath:fisco-config.xml
   groupId: 1
+
+encrype:
+  key: nftSystem-key
