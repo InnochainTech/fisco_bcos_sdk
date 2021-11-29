@@ -33,5 +33,5 @@ public class BatchSellDo extends RequestDo {
 	private String to;
 
 	@ApiModelProperty(value = "代币有效截至时间(公链秒时间戳，bcos毫秒时间戳)")
-	private BigInteger expirationTime;
+	private BigInteger expirationTime = new BigInteger("0");
 }

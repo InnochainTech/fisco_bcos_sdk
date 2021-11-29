@@ -2,7 +2,7 @@
 
 APP_NAME=fisco_bcos_sdk-1.0-SNAPSHOT.jar
 LOG_FILE=log.txt
-JAVA_HOME=../jdk1.8.0_301/bin/java
+JAVA_HOME=java
 
 
 usage() {

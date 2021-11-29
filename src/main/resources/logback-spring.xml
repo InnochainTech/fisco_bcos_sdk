@@ -4,7 +4,7 @@
     <property name="PATTERN" value="%-12(%d{yyyy-MM-dd HH:mm:ss.SSS}) |-%-5level [%thread] %c [%L] -| %msg%n"/>
 
     <!--定义日志文件的存储地址 勿在 LogBack 的配置中使用相对路径-->
-    <property name="LOG_HOME" value="/home/wanbowen/fisco_bcos_sdk/logs" />
+    <property name="LOG_HOME" value="/home/karma/fisco_bcos_sdk/logs" />
 
     <!-- 开发环境 -->
     <springProfile name="dev">
@@ -27,7 +27,7 @@
             <file>${LOG_HOME}/chain-sdk.log</file>
             <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
                 <!-- 文件名称 -->
-                <fileNamePattern>${LOG_HOME}/chain-sdk.%d{yyyy-MM-dd}.log</fileNamePattern>
+                <fileNamePattern>${LOG_HOME}/fisco_bcos_sdk.%d{yyyy-MM-dd}.log</fileNamePattern>
                 <!-- 文件最大保存历史数量 -->
                 <MaxHistory>100</MaxHistory>
             </rollingPolicy>
@@ -94,7 +94,7 @@
             <file>${LOG_HOME}/chain-sdk.log</file>
             <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
                 <!-- 文件名称 -->
-                <fileNamePattern>${LOG_HOME}/chain-sdk.%d{yyyy-MM-dd}.log</fileNamePattern>
+                <fileNamePattern>${LOG_HOME}/fisco_bcos_sdk.%d{yyyy-MM-dd}.log</fileNamePattern>
                 <!-- 文件最大保存历史数量 -->
                 <MaxHistory>100</MaxHistory>
             </rollingPolicy>
