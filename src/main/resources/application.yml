@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: test
+    active: prod
   mvc:
     throw-exception-if-no-handler-found: true
     # 请求超时时间
