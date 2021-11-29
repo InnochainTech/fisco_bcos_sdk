@@ -1,4 +1,4 @@
-import com.ejlchina.okhttps.OkHttps;
+import inno.fiscobcos.be.util.OkHttpUtils;
 
 /**
  * @author peifeng
@@ -15,8 +15,9 @@ public class Test {
 
 	@org.junit.Test
 	public  void test(){
-		String result = OkHttps.sync("/version") // http://api.example.com/users
-				.get().getBody().toString();
-		System.out.println(result);
+
+
+		String url = "http://120.76.242.17:5004/WeBASE-Sign/version";
+		System.out.println(OkHttpUtils.httpGet(url));
 	}
 }
