@@ -34,7 +34,7 @@ public class NFTDeployDo {
 	private BigInteger totalSupply;
 
 	@ApiModelProperty(value = "权益链接")
-	private String equityLink;
+	private String equityLink = "";
 
 	@ApiModelProperty(value = "是否支持续费" ,required= true)
 	private Boolean canRenew;
