@@ -43,3 +43,5 @@ filePath:
 bcos:
   config: classpath:fisco-config-test.xml
   groupId: 1
+  encryptType: 0
+  signType: 2

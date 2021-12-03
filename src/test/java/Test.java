@@ -1,5 +1,3 @@
-import java.util.regex.Pattern;
-
 /**
  * @author peifeng
  * @date 2021/11/18 16:59
@@ -11,5 +9,13 @@ public class Test {
 		for (int i = 1; i <=200 ; i++){
 			System.out.print(i+",");
 		}
+	}
+
+	@org.junit.Test
+	public  void test(){
+
+		//
+		// String url = "http://120.76.242.17:5004/WeBASE-Sign/version";
+		// System.out.println(OkHttpUtils.httpGet(url));
 	}
 }
