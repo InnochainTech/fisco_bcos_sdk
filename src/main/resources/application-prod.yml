@@ -40,6 +40,8 @@ filePath:
 bcos:
   config: classpath:fisco-config.xml
   groupId: 1
+  encryptType: 0
+  signType: 2
 
 encrype:
   key: nftSystem-key

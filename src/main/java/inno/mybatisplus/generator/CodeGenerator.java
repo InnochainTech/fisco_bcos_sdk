@@ -27,7 +27,7 @@ public class CodeGenerator {
     /**
      * 公共包路径
      */
-    private String parentPackage = "inno/fiscobcos/be";
+    private String parentPackage = "inno/fisco/bcos/be";
     /**
      * 模块名
      */

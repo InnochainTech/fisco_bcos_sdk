@@ -115,7 +115,12 @@
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
-            <version>4.0.0</version>
+            <version>3.10.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.60</version>
         </dependency>
 
 
@@ -145,7 +150,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>inno.fiscobcos.be.MainApplication</mainClass>
+                    <mainClass>inno.fisco.bcos.be.MainApplication</mainClass>
                 </configuration>
             </plugin>
         </plugins>
