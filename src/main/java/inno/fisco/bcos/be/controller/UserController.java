@@ -43,7 +43,7 @@ public class UserController {
 
         CryptoKeyPair account = bcosClientWrapper.createAccount("");
         Wallet wallet = new Wallet(account.getHexPrivateKey(), account.getHexPublicKey(), account.getAddress());
-        String url = Constant.LOCAL_WEBASESIGN_URL + Constant.USER_NEWUSER_URL;
+        String url = Constant.WEBASESIGN_URL + Constant.USER_NEWUSER_URL;
         final String result = OkHttpUtils.builder().url(url)
                 // 有参数的话添加参数，可多个
                 .addPostParam("appId", reqNewUser.getAppId())
