@@ -4,7 +4,7 @@
     <property name="PATTERN" value="%-12(%d{yyyy-MM-dd HH:mm:ss.SSS}) |-%-5level [%thread] %c [%L] -| %msg%n"/>
 
     <!--定义日志文件的存储地址 勿在 LogBack 的配置中使用相对路径-->
-    <property name="LOG_HOME" value="/home/karma/fisco_bcos_sdk/logs" />
+    <property name="LOG_HOME" value="/home/wanbowen/fisco_bcos_sdk2.0/logs" />
 
     <!-- 开发环境 -->
     <springProfile name="dev">
