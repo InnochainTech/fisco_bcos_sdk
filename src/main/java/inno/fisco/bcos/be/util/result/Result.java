@@ -36,4 +36,12 @@ public class Result<T>{
         result.setMsg(msg);
         return result;
     }
+
+    public Result error(Integer code, String msg, T data) {
+        Result result = new Result();
+        result.setCode(code);
+        result.setMsg(msg);
+        result.setData(data);
+        return result;
+    }
 }

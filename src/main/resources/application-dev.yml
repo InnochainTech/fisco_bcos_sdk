@@ -15,7 +15,7 @@ spring:
 
 #rocketMQ
 rocketmq:
-  work: false
+  work: true
   #producer
   producer:
     groupName: chain-service-group

@@ -2,14 +2,18 @@ package inno.fisco.bcos.be.transaction;
 
 import com.alibaba.fastjson.JSON;
 import inno.fisco.bcos.be.constant.Constant;
-import inno.fisco.bcos.be.entity.usesign.response.ResNFTDeploy;
-import inno.fisco.bcos.be.util.AesUtils;
-import inno.fisco.bcos.be.util.OkHttpUtils;
 import inno.fisco.bcos.be.entity.ResVo;
+import inno.fisco.bcos.be.entity.usesign.response.ResNFTDeploy;
+import inno.fisco.bcos.be.util.OkHttpUtils;
 import org.fisco.bcos.sdk.crypto.CryptoSuite;
 import org.fisco.bcos.sdk.utils.Numeric;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class KeyToolSignTransaction implements ISignTransaction {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(KeyToolSignTransaction.class);
+
     public KeyToolSignTransaction(CryptoSuite cryptoSuite) {
         setCryptoSuite(cryptoSuite);
     }
@@ -33,7 +37,7 @@ public class KeyToolSignTransaction implements ISignTransaction {
      */
     public String signData(byte[] dataToSign, String signUserId) {
 
-        String url = Constant.LOCAL_WEBASESIGN_URL + Constant.SIGN_URL;
+        String url = Constant.WEBASESIGN_URL + Constant.SIGN_URL;
         final String result = OkHttpUtils.builder().url(url)
                 // 有参数的话添加参数，可多个
                 .addPostParam("encodedDataStr", Numeric.toHexString(dataToSign))
@@ -50,8 +54,10 @@ public class KeyToolSignTransaction implements ISignTransaction {
         ResNFTDeploy resNFTDeploy = new ResNFTDeploy();
         if(resVo.getMessage().equals(Constant.SUCCESS_1)){
             resNFTDeploy = JSON.parseObject(JSON.toJSONString(resVo.getData()),ResNFTDeploy.class);
+        }else{
+            LOGGER.error("签名失败："+resVo.getMessage());
         }
-        return AesUtils.aesDecrypt(resNFTDeploy.getSignDataStr());
+        return resNFTDeploy.getSignDataStr();
 
         // CryptoKeyPair cryptoKeyPair = cryptoSuite.getCryptoKeyPair();
         // System.out.println("privateKey:"+cryptoKeyPair.getHexPrivateKey());

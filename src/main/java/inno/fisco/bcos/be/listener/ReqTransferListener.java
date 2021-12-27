@@ -1,18 +1,31 @@
 package inno.fisco.bcos.be.listener;
 
-import inno.fisco.bcos.be.constant.Config;
+import com.alibaba.fastjson.JSONObject;
+import inno.fisco.bcos.be.constant.Constant;
 import inno.fisco.bcos.be.constant.MQConstant;
+import inno.fisco.bcos.be.entity.response.BatchTransferVo;
+import inno.fisco.bcos.be.entity.usesign.ReqVo;
+import inno.fisco.bcos.be.entity.usesign.request.BatchTransferReq;
+import inno.fisco.bcos.be.service.MQNFTService;
 import inno.fisco.bcos.be.service.RocketMsgService;
+import inno.fisco.bcos.be.util.result.Result;
+import inno.fisco.bcos.be.util.validate.ErrorInfos;
+import inno.fisco.bcos.be.util.validate.ValidateUtils;
+import lombok.SneakyThrows;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
 import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
 import org.apache.rocketmq.common.message.MessageExt;
+import org.fisco.bcos.sdk.abi.ABICodecException;
+import org.fisco.bcos.sdk.transaction.model.exception.NoSuchTransactionFileException;
+import org.fisco.bcos.sdk.transaction.model.exception.TransactionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -27,8 +40,9 @@ public class ReqTransferListener implements MessageListenerConcurrently {
     private RocketMsgService rocketMsgService;
 
     @Autowired
-    private Config config;
+    private MQNFTService mqnftService;
 
+    @SneakyThrows
     @Override
     public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> list, ConsumeConcurrentlyContext consumeConcurrentlyContext) {
         if (CollectionUtils.isEmpty(list)) {
@@ -44,33 +58,21 @@ public class ReqTransferListener implements MessageListenerConcurrently {
         return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
     }
 
-    private void mockConsume(String msg){
-        LOGGER.info("ReqDeployListener receive msg: {}.", msg);
-//        Result<ResponseDto> result = new Result<>();
-//        try{
-//            String dncodeMsg = EncrypeUtils.AESDncode(config.key,msg);
-//            LOGGER.info("ERC20BatchTransferRequestListener receive dncodeMsg: {}.", dncodeMsg);
-//            BatchTransferVo batchTransferVo = JSONObject.parseObject(dncodeMsg,BatchTransferVo.class);
-//            ErrorInfos errorInfos = ValidateUtils.validate(batchTransferVo);
-//            if(errorInfos.getErrors().size() != 0){
-//                result = ResultUtils.error(0,"参数校验失败",batchTransferVo.getOrderId(),errorInfos);
-//            }else{
-//                result = erc20Service.batchTransfer(batchTransferVo.getOrderId(), batchTransferVo.getPrivateKey(),  batchTransferVo.getAccountList(), batchTransferVo.getQuantity()+"");
-//            }
-//            LOGGER.info("ERC20BatchTransfer mockConsume success result:{}.",result.toString());
-//        }catch (JSONException jsonException){
-//            result = ResultUtils.error(0,"json数据转换失败，原数据为:"+msg);
-//            LOGGER.error("ERC20BatchTransfer mockConsume error msg:{},result:{}.",jsonException.getMessage(),result.toString());
-//        } catch (Exception exception) {
-//            result = ResultUtils.error(0,"消息解密失败，原数据为:"+msg);
-//            LOGGER.error("ERC20BatchTransfer mockConsume error msg:{},result:{}.",exception.getMessage(),result.toString());
-//        }
-        String resultStr = null;
-//        try{
-//            resultStr = EncrypeUtils.AESEncode(config.key,JSONObject.toJSONString(result));
-//        }catch (Exception exception){
-//            LOGGER.error("ERC20BatchTransfer AESEncode error msg:{},result:{}.",exception.getMessage(),result.toString());
-//        }
+    private void mockConsume(String msg) throws ABICodecException, TransactionException, NoSuchTransactionFileException, IOException {
+        LOGGER.info("ReqTransferListener receive msg: {}.", msg);
+        Result<BatchTransferVo> result = new Result();
+
+        ReqVo reqVo = JSONObject.parseObject(msg, ReqVo.class);
+        BatchTransferReq batchTransferReq = JSONObject.parseObject(reqVo.getFuncParam().toString(),BatchTransferReq.class);
+        reqVo.setFuncParam(batchTransferReq);
+        ErrorInfos errorInfos = ValidateUtils.validate(reqVo);
+        if (errorInfos.getErrors().size() != 0) {
+            result = new Result<>().error(Constant.ERROR_CODE, "参数校验失败:", errorInfos);
+        } else {
+            result = mqnftService.batchTransfer(reqVo);
+        }
+        LOGGER.info("ReqTransferListener mockConsume success result:{}.", result.toString());
+        String resultStr = JSONObject.toJSONString(result);
         rocketMsgService.simpleSendMsg(MQConstant.CHAIN_RESPONSE_TOPIC, MQConstant.BCOS_RES_NFT_TRANSFER_TAG, resultStr);
     }
 }

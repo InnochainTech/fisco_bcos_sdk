@@ -34,6 +34,6 @@ public class ResNewUser {
     // @ApiModelProperty(value = "描述" ,required = true)
     // private String description;
 
-    @ApiModelProperty(value = "加密类型" ,required = true)
+    @ApiModelProperty(value = "加密类型(0:非国密，1：国密)" ,required = true)
     private Integer encryptType;
 }

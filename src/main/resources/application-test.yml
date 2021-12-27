@@ -1,5 +1,5 @@
 server:
-  port: 8800
+  port: 8801
 
 spring:
   jackson:
@@ -15,7 +15,7 @@ spring:
 
 #rocketMQ
 rocketmq:
-  work: false
+  work: true
   #producer
   producer:
     groupName: chain-service-group
@@ -34,7 +34,7 @@ rocketmq:
 #rocketmq.producer.group = chain-producer-group
 
 encrype:
-  key: dev-key
+  key: EfdsW23D23d3df43
 
 filePath:
   abi: contract/abi/
@@ -43,5 +43,10 @@ filePath:
 bcos:
   config: classpath:fisco-config-test.xml
   groupId: 1
+  #加密类型 0默认 1国密
   encryptType: 0
-  signType: 2
+  bin: contract/bin/NFT.bin
+  abi: contract/abi/NFT.abi
+  chainId: 1
+  #交易上链方式 0同步 1异步
+  async: 0
